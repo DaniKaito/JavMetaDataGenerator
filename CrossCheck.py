@@ -175,7 +175,7 @@ tu vuoi il codename di quelli con null e quelli che non null DOPO aver fatto la 
 
 async def main(fileName):
     global driver
-    driver = uc.Chrome(use_subprocess=True,headless=False)
+    driver = uc.Chrome(use_subprocess=True,headless=True)
     rowList=readCsv(f"{fileName}")
     rowList.pop(0)
     for row in rowList:
