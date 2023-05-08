@@ -33,7 +33,7 @@ def setupConsole(parent):
 
 async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, excludeCsvFilePath):
     if ".csv" not in newCsvFilePath:
-        newCsvFilePath += newCsvFilePath
+        newCsvFilePath += ".csv"
     console.writeInBox(text="Starting to scan javlibrary\n")
     chrome_options = Options()
     chrome_options.add_argument("--headless")
