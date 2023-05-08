@@ -18,7 +18,7 @@ class textBox():
 
     def setup(self, parentWindow, bg, fg, row, column, columnspan):
         self.box = tkinter.Text(master=parentWindow, bg=bg, height=4, width=100,
-                           foreground=fg, font=("Robotodo", 11), state="disabled")
+                           foreground=fg, font=("Robotodo", 11))
         self.box.grid(row=row, column=column, columnspan=columnspan, padx=5, pady=5)
     
     def writeInBox(self, text):
