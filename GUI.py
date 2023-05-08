@@ -64,7 +64,7 @@ class pathSelector():
             self.nameSelectorVar = tkinter.StringVar(self.frame, value="")
             self.nameEntry = entry(parentWindow=self.frame, padx=5, pady=7, entryVar=self.nameSelectorVar)
             if nameExplorer:
-                self.nameButton = button(parentWindow=self.frame, text="Choose Path",
+                self.nameButton = button(parentWindow=self.frame, text="Choose File",
                                      command=lambda: self.selectPath(filesExt=filters, var=self.nameSelectorVar))
 
         self.entryLabel = label(parentWindow=self.frame, labelText=entryLabelText, padx=5, pady=7, bg="#282828", fg="#c7c7c7", fontSize=11)
@@ -73,7 +73,7 @@ class pathSelector():
 
         if scanPath:
             if askFile:
-                self.button = button(parentWindow=self.frame, text="Choose Path", command=lambda: self.selectPath(filesExt=filters, var=self.entryVar))
+                self.button = button(parentWindow=self.frame, text="Choose File", command=lambda: self.selectPath(filesExt=filters, var=self.entryVar))
             else:
                 self.button = button(parentWindow=self.frame, text="Choose Path", command=lambda: self.selectDir(var=self.entryVar))
 
@@ -134,8 +134,6 @@ class gui():
         deleteRowBtn = button(parentWindow=deleteRecord.frame, text="DELETE ROW",
                               command=lambda: self.runAsync(functionTarget=functions.deleteRow(filePath=deleteRecord.entryVar.get(),
                                                                                                 id=deleteRecord.nameSelectorVar.get())))
-        deleteTableBtn = button(parentWindow=deleteRecord.frame, text="DELETE CSV FILE",
-                                command=lambda: self.runAsync(functionTarget=functions.deleteFile(filePath=deleteRecord.entryVar.get())))
         return  deleteRecord
 
     async def defineExportHtmlWindow(self):
@@ -164,9 +162,6 @@ class gui():
         crossCheck = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT CSV FILE",
                                 askFile=True, filters=[("Comma separated values", ".csv")], labelText="CROSS CHECK", row=0, column=2)
 
-        async def checkCross():
-            await CrossCheck.main(crossCheck.entryVar.get())
-
         newCsvBtn = button(parentWindow=crossCheck.frame, text="CHECK",
                            command=lambda: self.runAsync(functionTarget=CrossCheck.main(crossCheck.entryVar.get())))
         return crossCheck
@@ -176,12 +171,18 @@ class gui():
                                  askFile=False, labelText="UPDATE CSV FILE", nameSelector=True, nameExplorer=True,
                                  nameFieldLabel="INSERT CSV FILE NAME", row=1, column=1)
 
+        checkBoxVar = tkinter.BooleanVar(updateCsv.frame)
+        subFolderSearchBtn = checkBox(parentWindow=updateCsv.frame, text="SEARCH IN SUB-FOLDERS",
+                                      var=checkBoxVar, bg="#282828", fg="#c7c7c7", padx=5, pady=5)
+
         updateCsvBtn = button(parentWindow=updateCsv.frame, text="UPDATE",
                            command=lambda: self.runAsync(functionTarget=functions.update(scanPath=updateCsv.entryVar.get(),
-                                                                                        filePath=updateCsv.nameSelectorVar.get())))
+                                                                                        filePath=updateCsv.nameSelectorVar.get(),
+                                                                                        subFolders=checkBoxVar.get())))
         trimBtn = button(parentWindow=updateCsv.frame, text="TRIM",
                            command=lambda: self.runAsync(functionTarget=functions.trim(scanPath=updateCsv.entryVar.get(),
-                                                                                        filePath=updateCsv.nameSelectorVar.get())))
+                                                                                        filePath=updateCsv.nameSelectorVar.get(),
+                                                                                        subFolders=checkBoxVar.get())))
 
         return updateCsv
 

@@ -80,17 +80,18 @@ async def scanNewCsv(scanPath, fileName, subFolders=False):
 async def exportHtml(filePath):
     cm.saveAsHtml(filePath=filePath)
 
-async def deleteFile(filePath):
-    os.remove(filePath)
-    print(f"Successfully deleted the following file: {filePath}")
-
 async def deleteRow(filePath, id):
     cm.removeRow(filePath=filePath, rowID=id)
 
 #same as update, but removes the files that aren't in the path anymore from the csv file
-async def trim(filePath, scanPath):
+async def trim(filePath, scanPath, subFolders):
+    if subFolders:
+        print(f"SUB-FOLDERS SCAN OPTION FOUND")
+    if ".csv" not in filePath:
+        filePath += ".csv"
     df = cm.loadCsvFile(filePath=filePath)
     ids = df["JAVID"].values.tolist()
+    fm.files = []
     files = fm.getFileList(scanPath=scanPath)
     files = [file.split("\\")[-1].split(".")[0] for file in files]
     count = 0
@@ -103,10 +104,15 @@ async def trim(filePath, scanPath):
     update(filePath=filePath, scanPath=scanPath)
 
 #analyzes files video file in a path if their last modification date has been modified from the one stored inside the csv file
-async def update(filePath, scanPath):
+async def update(filePath, scanPath, subFolders):
+    if subFolders:
+        print(f"SUB-FOLDERS SCAN OPTION FOUND")
+    if ".csv" not in filePath:
+        filePath += ".csv"
     df = cm.loadCsvFile(filePath=filePath)
     items = df[["JAVID", "LAST_MODIFIED"]].values.tolist()
-    for file in fm.getFileList(scanPath=scanPath):
+    fm.files = []
+    for file in fm.getFileList(scanPath=scanPath, subFolders=subFolders):
         found = False
         fileName = file.split("\\")[-1].split(".")[0]
         for item in items:
