@@ -92,8 +92,22 @@ async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, e
             if javID in compareIds:
                 videoData = cm.getRow(rowID=javID, dataFrame=compareDf)
             else:
-                videoData = fm.standardInfoDict
-                videoData[JavMetadataGenerator.indexColumnName] = javID
+                videoData = {"JAVID": [javID],
+                                 "EXTENSION": [""],
+                                 "FRAME_RATE": [""],
+                                 "AVERAGE_BIT_RATE": [""],
+                                 "VIDEO_BIT_RATE": [""],
+                                 "AUDIO_BIT_RATE": [""],
+                                 "CODEC": [""],
+                                 "RESOLUTION": [""],
+                                 "MB": [""],
+                                 "GB": [""],
+                                 "RUNTIME":[""],
+                                 "DURATION": [""],
+                                 "ADDED": [""],
+                                 "LAST_MODIFIED": [""],
+                                 "DAMAGED": ["0"],
+                                 "FULL_PATH": [""]}
             cm.appendRow(filePath=newCsvFilePath, info=videoData)
     console.writeInBox(text="Created new csv file successfully")
 

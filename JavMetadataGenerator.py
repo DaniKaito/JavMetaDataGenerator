@@ -62,6 +62,7 @@ class CsvManager():
         df1 = self.loadCsvFile(filePath1)
         df2 = self.loadCsvFile(filePath2)
         df = pd.concat([df1, df2]).reset_index(drop=True)
+        df = df.drop_duplicates(subset=indexColumnName, keep="first")
         print(f"Merge successful")
         self.saveCsv(savePath, df)
 
