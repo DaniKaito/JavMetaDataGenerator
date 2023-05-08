@@ -137,8 +137,8 @@ class gui():
                                     nameSelector=True, nameExplorer=True, nameFieldLabel="INSERT CSV FILE PATH")
 
         deleteRowBtn = button(parentWindow=deleteRecord.frame, text="DELETE ROW",
-                              command=lambda: self.runAsync(functionTarget=functions.deleteRow(filePath=deleteRecord.entryVar.get(),
-                                                                                                id=deleteRecord.nameSelectorVar.get())))
+                              command=lambda: self.runAsync(functionTarget=functions.deleteRow(filePath=deleteRecord.nameSelectorVar.get(),
+                                                                                                id=deleteRecord.entryVar.get())))
         return  deleteRecord
 
     async def defineExportHtmlWindow(self):
@@ -168,7 +168,7 @@ class gui():
                                 askFile=True, filters=[("Comma separated values", ".csv")], labelText="CROSS CHECK", row=1, column=2)
 
         newCsvBtn = button(parentWindow=crossCheck.frame, text="CHECK",
-                           command=lambda: self.runAsync(functionTarget=CrossCheck.main(crossCheck.entryVar.get())))
+                           command=lambda: self.runAsync(functionTarget=functions.crossCheck(filePath=crossCheck.entryVar.get())))
         return crossCheck
 
     async def defineUpdateTableWindow(self):

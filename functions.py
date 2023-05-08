@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 import tkinter
 from tkinter import *
-from datetime import datetime
+import CrossCheck
 
 
 class textBox():
@@ -18,13 +18,14 @@ class textBox():
 
     def setup(self, parentWindow, bg, fg, row, column, columnspan):
         self.box = tkinter.Text(master=parentWindow, bg=bg, height=4, width=100,
-                           foreground=fg, font=("Robotodo", 11))
+                           foreground=fg, font=("Robotodo", 11), state="disabled")
         self.box.grid(row=row, column=column, columnspan=columnspan, padx=5, pady=5)
     
     def writeInBox(self, text):
-        timeStamp = datetime.now().strftime("[%H:%M:%S]")
-        text = timeStamp + text
+        timeStamp = datetime.datetime.now().strftime("[%H:%M:%S]")
+        text = timeStamp + "  " + text
         self.box.insert(INSERT, text)
+        self.box.see("end")
     
     def deleteAll(self):
         self.box.delete("1.0", END)
@@ -93,7 +94,7 @@ async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, e
                 videoData = fm.standardInfoDict
                 videoData[JavMetadataGenerator.indexColumnName] = javID
             cm.appendRow(filePath=newCsvFilePath, info=videoData)
-    console.writeInBox(text="Created new csv file successfully\n\n\n")
+    console.writeInBox(text="Created new csv file successfully")
 
 async def scanNewCsv(scanPath, fileName, subFolders=False):
     console.deleteAll()
@@ -109,17 +110,17 @@ async def scanNewCsv(scanPath, fileName, subFolders=False):
         fileInfo = fm.getVideoData(file=file)
         cm.appendRow(filePath=fileName, info=fileInfo)
         await asyncio.sleep(0.001)
-    console.writeInBox(text=f"Created new csv file successfully\n\n\n")
+    console.writeInBox(text=f"Created new csv file successfully")
 
 async def exportHtml(filePath):
     console.deleteAll()
     cm.saveAsHtml(filePath=filePath)
-    console.writeInBox(text=f"{filePath} successfully exported\n\n\n")
+    console.writeInBox(text=f"{filePath} successfully exported")
 
 async def deleteRow(filePath, id):
     console.deleteAll()
     cm.removeRow(filePath=filePath, rowID=id)
-    console.writeInBox(text=f"{id} successfully deleted from {filePath}\n\n\n")
+    console.writeInBox(text=f"{id} successfully deleted from {filePath}")
 
 #same as update, but removes the files that aren't in the path anymore from the csv file
 async def trim(filePath, scanPath, subFolders):
@@ -137,7 +138,7 @@ async def trim(filePath, scanPath, subFolders):
         if id not in files:
             cm.removeRow(filePath=filePath, rowID=id)
             count += 1
-    print(f"TRIM SUCCESSFUL: A total of {count} rows had been eliminated\n\n")
+    print(f"TRIM SUCCESSFUL: A total of {count} rows had been eliminated")
     update(filePath=filePath, scanPath=scanPath, subFolders=subFolders)
 
 #analyzes files video file in a path if their last modification date has been modified from the one stored inside the csv file
@@ -166,19 +167,19 @@ async def update(filePath, scanPath, subFolders):
                     print(f"Last modification date is the same, it will be skipped\n")
                 break
         if not found:
-            console.writeInBox(text=f"No row found for the following file in the csv: {file}\nIt will be now analyzed")
+            console.writeInBox(text=f"No row found for the following file in the csv: {file} - It will be now analyzed\n")
             fileInfo = fm.getVideoData(file=file)
             cm.appendRow(filePath=filePath, info=fileInfo)
         print("\n\n")
         await asyncio.sleep(0.001)
-    console.writeInBox(text=f"Update Successful\n\n\n")
+    console.writeInBox(text=f"Update Successful")
 
 async def merge(savePath, csv1, csv2):
     console.deleteAll()
     if ".csv" not in savePath:
         savePath += ".csv"
     cm.concatDataFrames(savePath=savePath, filePath1=csv1, filePath2=csv2)
-    console.writeInBox(text=f"Merge Successful\n\n\n")
+    console.writeInBox(text=f"Merge Successful")
 
 async def compare(savePath, csv1, csv2):
     console.deleteAll()
@@ -193,3 +194,9 @@ async def compare(savePath, csv1, csv2):
         os.mkdir(savePath)
     cm.compareDataFrames(savePath=savePath, filePath1=csv1, filePath2=csv2)
     console.writeInBox(text=f"Compare Successful\n\n\n")
+
+async def crossCheck(filePath):
+    console.deleteAll()
+    console.write(text=f"Cross Check started\n")
+    await CrossCheck.main(filePath)
+    console.writeInBox(text="Cross Check finished")
