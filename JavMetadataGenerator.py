@@ -92,7 +92,7 @@ class CsvManager():
         self.saveCsv(filePath=dupDfPath, dataFrame=dupDf)
 
     def getRow(self, rowID, dataFrame):
-        row = dataFrame.loc[dataFrame[indexColumnName] == rowID].to_dict()
+        row = dataFrame.loc[dataFrame[indexColumnName] == rowID].to_dict(orient="list")
         return row
 
 class FileManager():
@@ -100,22 +100,22 @@ class FileManager():
         self.extensions = ['mp4', 'avi', 'flv', 'wmv', 'mkv', 'asf', 'm4v', 'mpg', 'rmvb', 'mov']
         self.mediaInfoPath = "mediainfo"
         self.logFilePath = ".\\logs"
-        self.standardInfoDict = {indexColumnName: ["N/A"],
-                                 "EXTENSION": ["N/A"],
-                                 "FRAME_RATE": ["N/A"],
-                                 "AVERAGE_BIT_RATE": ["N/A"],
-                                 "VIDEO_BIT_RATE": ["N/A"],
-                                 "AUDIO_BIT_RATE": ["N/A"],
-                                 "CODEC": ["N/A"],
-                                 "RESOLUTION": ["N/A"],
-                                 "MB": ["N/A"],
-                                 "GB": ["N/A"],
-                                 "RUNTIME":["N/A"],
-                                 "DURATION": ["N/A"],
-                                 "ADDED": ["N/A"],
-                                 "LAST_MODIFIED": ["N/A"],
+        self.standardInfoDict = {indexColumnName: [""],
+                                 "EXTENSION": [""],
+                                 "FRAME_RATE": [""],
+                                 "AVERAGE_BIT_RATE": [""],
+                                 "VIDEO_BIT_RATE": [""],
+                                 "AUDIO_BIT_RATE": [""],
+                                 "CODEC": [""],
+                                 "RESOLUTION": [""],
+                                 "MB": [""],
+                                 "GB": [""],
+                                 "RUNTIME":[""],
+                                 "DURATION": [""],
+                                 "ADDED": [""],
+                                 "LAST_MODIFIED": [""],
                                  "DAMAGED": ["0"],
-                                 "FULL_PATH": ["N/A"]}
+                                 "FULL_PATH": [""]}
         self.files = []
 
     #CREATES LOG FILES
