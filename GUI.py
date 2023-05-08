@@ -1,11 +1,18 @@
 import tkinter
 from tkinter import *
 from tkinter import filedialog
-import os
-
+import threading
 import CrossCheck
 import functions
 import asyncio
+
+class checkBox():
+    def __init__(self, parentWindow, text, padx, pady, bg, fg, var):
+        checkBtn = tkinter.Checkbutton(master=parentWindow, text=text,
+                            variable=var, background=bg, activeforeground=fg,
+                            foreground=fg, selectcolor=bg, activebackground=bg,
+                            )
+        checkBtn.pack(pady=pady, padx=padx)
 
 class frame():
     def __init__(self, parentWindow, padx, pady, bg, row, column):
@@ -81,70 +88,104 @@ class pathSelector():
             var.set(dir)
 
 class gui():
-    def __init__(self):
+    async def setup(self):
         self.mainWindow = tkinter.Tk()
         self.setupMainWindow()
 
-        self.mainCsvPathSelector = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT CSV FILE PATH",
-                                                filters=[("Comma separated values", ".csv")], labelText="MAIN CSV FILE PATH", row=0, column=0)
-
-        self.createCsvWindow = self.defineCreateCsvWindow()
-        self.exportHtmlWindow = self.defineExportHtmlWindow()
-        self.deleteWindow =self.defineDeleteWindow()
-        self.crossCheckWindow = self.definCrossCheckWindow()
-        self.updateTableWindow = self.defineUpdateTableWindow()
-        self.compareMergeWindow = self.defineCompareMergeWindow()
+        self.createCsvWindow = await self.defineCreateCsvWindow()
+        self.exportHtmlWindow = await self.defineExportHtmlWindow()
+        self.deleteWindow = await self.defineDeleteWindow()
+        self.crossCheckWindow = await self.definCrossCheckWindow()
+        self.updateTableWindow = await self.defineUpdateTableWindow()
+        self.compareMergeWindow = await self.defineCompareMergeWindow()
 
 
         self.mainWindow.mainloop()
 
-    def defineDeleteWindow(self):
-        deleteRecord = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT ROW ID TO DELETE",
-                                    scanPath=False, labelText="DELETE", row=0, column=1)
+    def runAsync(self, functionTarget):
+        self.buttonDisable(parentWindow=self.mainWindow)
+        thread = threading.Thread(target=lambda loop: loop.run_until_complete(functionTarget),
+                        args=(asyncio.new_event_loop(),))
+        thread.start()
+        threading.Thread(target=lambda loop: loop.run_until_complete(self.buttonAble(parentWindow=self.mainWindow, thread=thread)),
+                        args=(asyncio.new_event_loop(),)).start()
+    
+    async def buttonAble(self, parentWindow, thread):
+        thread.join()
+        for child in parentWindow.winfo_children():
+            if isinstance(child, tkinter.Button):
+                child.configure(state='normal')
+            else:
+                await self.buttonAble(parentWindow=child, thread=thread)
+
+    def buttonDisable(self, parentWindow):
+        for child in parentWindow.winfo_children():
+            if isinstance(child, tkinter.Button):
+                child.configure(state='disabled')
+            else:
+                self.buttonDisable(parentWindow=child)
+        
+
+    async def defineDeleteWindow(self):
+        deleteRecord = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT ID OF THE ROW TO DELETE",
+                                    scanPath=False, labelText="DELETE", row=0, column=0, filters=[("Comma separated values", ".csv")],
+                                    nameSelector=True, nameExplorer=True, nameFieldLabel="INSERT CSV FILE PATH")
+
         deleteRowBtn = button(parentWindow=deleteRecord.frame, text="DELETE ROW",
-                              command=lambda: functions.deleteRow(filePath=self.mainCsvPathSelector.entryVar.get(),
-                                                                  id=deleteRecord.entryVar.get()))
+                              command=lambda: self.runAsync(functionTarget=functions.deleteRow(filePath=deleteRecord.entryVar.get(),
+                                                                                                id=deleteRecord.nameSelectorVar.get())))
         deleteTableBtn = button(parentWindow=deleteRecord.frame, text="DELETE CSV FILE",
-                                command= lambda: functions.deleteFile(filePath=self.mainCsvPathSelector.entryVar.get()))
+                                command=lambda: self.runAsync(functionTarget=functions.deleteFile(filePath=deleteRecord.entryVar.get())))
         return  deleteRecord
 
-    def defineExportHtmlWindow(self):
+    async def defineExportHtmlWindow(self):
         exportHtml = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT CSV FILE PATH",
-                                  filters=[("Comma separated values", ".csv")], labelText="EXPORT AS HTML", row=0, column=2)
+                                  filters=[("Comma separated values", ".csv")], labelText="EXPORT AS HTML", row=0, column=1)
+
         exportBtn = button(parentWindow=exportHtml.frame, text="EXPORT AS HTML",
-                           command=lambda: functions.exportHtml(filePath=exportHtml.entryVar.get()))
+                           command=lambda: self.runAsync(functionTarget=functions.exportHtml(filePath=exportHtml.entryVar.get())))
         return exportHtml
 
-    def defineCreateCsvWindow(self):
+    async def defineCreateCsvWindow(self):
         createCsv = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT PATH TO SCAN",
                                 askFile=False, labelText="CREATE CSV FILE", nameSelector=True,
                                 nameFieldLabel="INSERT CSV FILE NAME", row=1, column=0)
+        checkBoxVar = tkinter.BooleanVar(createCsv.frame)
+        subFolderSearchBtn = checkBox(parentWindow=createCsv.frame, text="SEARCH IN SUB-FOLDERS",
+                                      var=checkBoxVar, bg="#282828", fg="#c7c7c7", padx=5, pady=5)
+
         newCsvBtn = button(parentWindow=createCsv.frame, text="GENERATE CSV",
-                           command=lambda: functions.scanNewCsv(scanPath=createCsv.entryVar.get(),
-                                                        fileName=createCsv.nameSelectorVar.get()))
+                           command=lambda: self.runAsync(functionTarget=functions.scanNewCsv(scanPath=createCsv.entryVar.get(),
+                                                                                            fileName=createCsv.nameSelectorVar.get(),
+                                                                                            subFolders=checkBoxVar.get())))
         return createCsv
 
-    def definCrossCheckWindow(self):
+    async def definCrossCheckWindow(self):
         crossCheck = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT CSV FILE",
-                                askFile=True, filters=[("Comma separated values", ".csv")], labelText="CROSS CHECK", row=0, column=3)
+                                askFile=True, filters=[("Comma separated values", ".csv")], labelText="CROSS CHECK", row=0, column=2)
+
+        async def checkCross():
+            await CrossCheck.main(crossCheck.entryVar.get())
+
         newCsvBtn = button(parentWindow=crossCheck.frame, text="CHECK",
-                           command=lambda: asyncio.run(CrossCheck.main(crossCheck.entryVar.get())))
+                           command=lambda: self.runAsync(functionTarget=CrossCheck.main(crossCheck.entryVar.get())))
         return crossCheck
 
-    def defineUpdateTableWindow(self):
+    async def defineUpdateTableWindow(self):
         updateCsv = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT PATH TO SCAN",
                                  askFile=False, labelText="UPDATE CSV FILE", nameSelector=True, nameExplorer=True,
                                  nameFieldLabel="INSERT CSV FILE NAME", row=1, column=1)
+
         updateCsvBtn = button(parentWindow=updateCsv.frame, text="UPDATE",
-                           command=lambda: functions.update(scanPath=updateCsv.entryVar.get(),
-                                                            filePath=updateCsv.nameSelectorVar.get()))
+                           command=lambda: self.runAsync(functionTarget=functions.update(scanPath=updateCsv.entryVar.get(),
+                                                                                        filePath=updateCsv.nameSelectorVar.get())))
         trimBtn = button(parentWindow=updateCsv.frame, text="TRIM",
-                           command=lambda: functions.trim(scanPath=updateCsv.entryVar.get(),
-                                                            filePath=updateCsv.nameSelectorVar.get()))
+                           command=lambda: self.runAsync(functionTarget=functions.trim(scanPath=updateCsv.entryVar.get(),
+                                                                                        filePath=updateCsv.nameSelectorVar.get())))
 
         return updateCsv
 
-    def defineCompareMergeWindow(self):
+    async def defineCompareMergeWindow(self):
         csvPathSelector = pathSelector(parentWindow=self.mainWindow, needFrame=True,
                                                 entryLabelText="INSERT CSV FILE PATH",
                                                 filters=[("Comma separated values", ".csv")],
@@ -156,14 +197,15 @@ class gui():
         newCsvNameSelector = pathSelector(parentWindow=csvPathSelector.frame, needFrame=False,
                                           entryLabelText="INSERT NEW CSV FILE PATH/NAME",
                                           scanPath=False, row=1, column=2)
+
         mergeBtn = button(parentWindow=csvPathSelector.frame, text="MERGE",
-                           command= lambda: functions.merge(savePath=newCsvNameSelector.entryVar.get(),
-                                                            csv1=csvPathSelector.entryVar.get(),
-                                                            csv2=csvPathSelector2.entryVar.get()))
+                           command=lambda: self.runAsync(functionTarget=functions.merge(savePath=newCsvNameSelector.entryVar.get(),
+                                                                                        csv1=csvPathSelector.entryVar.get(),
+                                                                                        csv2=csvPathSelector2.entryVar.get())))
         compareBtn = button(parentWindow=csvPathSelector.frame, text="COMPARE",
-                          command=lambda: functions.compare(savePath=newCsvNameSelector.entryVar.get(),
-                                                          csv1=csvPathSelector.entryVar.get(),
-                                                          csv2=csvPathSelector2.entryVar.get()))
+                          command=lambda: self.runAsync(functionTarget=functions.compare(savePath=newCsvNameSelector.entryVar.get(),
+                                                                                        csv1=csvPathSelector.entryVar.get(),
+                                                                                        csv2=csvPathSelector2.entryVar.get())))
 
     def setupMainWindow(self):
         self.mainWindow.configure(background="#1e1e1e")
@@ -173,8 +215,14 @@ class gui():
             self.mainWindow.rowconfigure(row, weight=1)
         for column in columns:
             self.mainWindow.rowconfigure(column, weight=1)
+        self.mainWindow.title("JavMetadataGenerator")
+        self.mainWindow.iconbitmap(".\\app.ico")
 
+
+async def main():
+    GUI = gui()
+    await GUI.setup()
 
 
 if __name__ == "__main__":
-    gui()
+    asyncio.run(main())
