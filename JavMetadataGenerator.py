@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-#import CrossCheck
 import asyncio
 import subprocess
 from datetime import datetime
@@ -22,6 +21,8 @@ class CsvManager():
     #SAVE A CSV FILE GIVEN ITS PATH AND NEW DATAFRAME
     def saveCsv(self, filePath, dataFrame):
         try:
+            dataFrame = dataFrame.sort_values(indexColumnName)
+            dataFrame.reset_index(drop=True)
             dataFrame.to_csv(filePath, encoding="utf-8", index=False)
             print(f"Saved the following file: {filePath}")
         except PermissionError as e:
@@ -90,27 +91,32 @@ class CsvManager():
         self.saveCsv(filePath=noDupDfPath, dataFrame=noDupDf)
         self.saveCsv(filePath=dupDfPath, dataFrame=dupDf)
 
+    def getRow(self, rowID, dataFrame):
+        row = dataFrame.loc[dataFrame[indexColumnName] == rowID].to_dict()
+        return row
+
 class FileManager():
     def __init__(self):
         self.extensions = ['mp4', 'avi', 'flv', 'wmv', 'mkv', 'asf', 'm4v', 'mpg', 'rmvb', 'mov']
         self.mediaInfoPath = "mediainfo"
         self.logFilePath = ".\\logs"
-        self.standardInfoDict = {indexColumnName: "N/A",
-                                 "EXTENSION": "N/A",
-                                 "FRAME_RATE": "N/A",
-                                 "AVERAGE_BIT_RATE": "N/A",
-                                 "VIDEO_BIT_RATE": "N/A",
-                                 "AUDIO_BIT_RATE": "N/A",
-                                 "CODEC": "N/A",
-                                 "RESOLUTION": "N/A",
-                                 "MB": "N/A",
-                                 "GB": "N/A",
-                                 "RUNTIME":"N/A",
-                                 "DURATION": "N/A",
-                                 "ADDED": "N/A",
-                                 "LAST_MODIFIED": "N/A",
-                                 "DAMAGED": "0",
-                                 "FULL_PATH": "N/A"}
+        self.standardInfoDict = {indexColumnName: ["N/A"],
+                                 "EXTENSION": ["N/A"],
+                                 "FRAME_RATE": ["N/A"],
+                                 "AVERAGE_BIT_RATE": ["N/A"],
+                                 "VIDEO_BIT_RATE": ["N/A"],
+                                 "AUDIO_BIT_RATE": ["N/A"],
+                                 "CODEC": ["N/A"],
+                                 "RESOLUTION": ["N/A"],
+                                 "MB": ["N/A"],
+                                 "GB": ["N/A"],
+                                 "RUNTIME":["N/A"],
+                                 "DURATION": ["N/A"],
+                                 "ADDED": ["N/A"],
+                                 "LAST_MODIFIED": ["N/A"],
+                                 "DAMAGED": ["0"],
+                                 "FULL_PATH": ["N/A"]}
+        self.files = []
 
     #CREATES LOG FILES
     def resetLogs(self):
@@ -135,13 +141,14 @@ class FileManager():
             return  False
 
     #GET ALL VIDEOS IN A DIR
-    def getFileList(self, scanPath):
-        fileList = []
+    def getFileList(self, scanPath, subFolders):
         for file in os.listdir(scanPath):
             filePath = os.path.join(scanPath, file)
             if self.isVideo(filePath=filePath):
-                fileList.append(filePath)
-        return fileList
+                self.files.append(filePath)
+            elif os.path.isdir(filePath) and subFolders:
+                self.getFileList(scanPath=filePath, subFolders=True)
+        return self.files
 
     #RUNS A MEDIA INFO CLI COMMAND GIVEN THE SOURCE AND PARAMETER TO SEARCH AND THE FILE TO SEARCH IN
     def runMediaInfo(self, stream, outputParameter, filePath):
@@ -190,5 +197,3 @@ class FileManager():
                 info["DAMAGED"] = "1"
         print("\n")
         return info
-
-

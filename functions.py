@@ -50,12 +50,14 @@ async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, e
     cm.createEmptyCsvFile(filePath=newCsvFilePath)
     compareDf = cm.loadCsvFile(filePath=compareCsvFilePath)
     compareIds = compareDf['JAVID'].values.tolist()
-    excludeIds = cm.loadCsvFile(filePath=excludeCsvFilePath)['JAVID'].values.tolist()
+    if excludeCsvFilePath != "":
+        excludeIds = cm.loadCsvFile(filePath=excludeCsvFilePath)['JAVID'].values.tolist()
+    else:
+        excludeIds = []
     for javID in javidList:
         if javID not in excludeIds:
             if javID in compareIds:
-                videoData = cm.getRow(rowID=javID, dataFrame=compareDf)
-                
+                videoData = cm.getRow(rowID=javID, dataFrame=compareDf).to_dict(orient="list")
             else:
                 videoData = fm.standardInfoDict
                 videoData[JavMetadataGenerator.indexColumnName] = javID

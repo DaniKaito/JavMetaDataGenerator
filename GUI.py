@@ -98,7 +98,7 @@ class gui():
         self.crossCheckWindow = await self.definCrossCheckWindow()
         self.updateTableWindow = await self.defineUpdateTableWindow()
         self.compareMergeWindow = await self.defineCompareMergeWindow()
-
+        self.javLibraryWindow = await self.defineJavLibraryWindow()
 
         self.mainWindow.mainloop()
 
@@ -206,6 +206,24 @@ class gui():
                           command=lambda: self.runAsync(functionTarget=functions.compare(savePath=newCsvNameSelector.entryVar.get(),
                                                                                         csv1=csvPathSelector.entryVar.get(),
                                                                                         csv2=csvPathSelector2.entryVar.get())))
+
+    async def defineJavLibraryWindow(self):
+        javLib = pathSelector(parentWindow=self.mainWindow, needFrame=True, scanPath=False,
+                              entryLabelText="INSERT NEW CSV FILE NAME",
+                              labelText="JAVLIBRARY", nameSelector=True,
+                              nameFieldLabel="INSERT JAVLIBRARY URL",
+                              row=0, column=3)
+        javLib.frame.grid_configure(rowspan=2)
+        csvPathSelector = pathSelector(parentWindow=javLib.frame, needFrame=False,
+                                       entryLabelText="INSERT CSV FILE PATH TO BE EXCLUDED",
+                                       nameSelector=True, nameFieldLabel="INSERT CSV FILE PATH TO BE COMPARED",
+                                       askFile=True, nameExplorer=True, filters=[("Comma separated values", ".csv")])
+        startBtn = button(parentWindow=javLib.frame, text="START",
+                          command=lambda: self.runAsync(functionTarget=functions.scanJavlibraryURL(javLibraryURL=javLib.nameSelectorVar.get(),
+                                                                                           newCsvFilePath=javLib.entryVar.get(),
+                                                                                           compareCsvFilePath=csvPathSelector.nameSelectorVar.get(),
+                                                                                           excludeCsvFilePath=csvPathSelector.entryVar.get())))
+        return javLib
 
     def setupMainWindow(self):
         self.mainWindow.configure(background="#1e1e1e")
