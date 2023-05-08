@@ -131,7 +131,7 @@ async def trim(filePath, scanPath, subFolders):
     df = cm.loadCsvFile(filePath=filePath)
     ids = df["JAVID"].values.tolist()
     fm.files = []
-    files = fm.getFileList(scanPath=scanPath)
+    files = fm.getFileList(scanPath=scanPath, subFolders=subFolders)
     files = [file.split("\\")[-1].split(".")[0] for file in files]
     count = 0
     for id in ids:
