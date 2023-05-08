@@ -6,6 +6,10 @@ import CrossCheck
 import functions
 import asyncio
 
+
+
+
+
 class checkBox():
     def __init__(self, parentWindow, text, padx, pady, bg, fg, var):
         checkBtn = tkinter.Checkbutton(master=parentWindow, text=text,
@@ -99,6 +103,7 @@ class gui():
         self.updateTableWindow = await self.defineUpdateTableWindow()
         self.compareMergeWindow = await self.defineCompareMergeWindow()
         self.javLibraryWindow = await self.defineJavLibraryWindow()
+        functions.setupConsole(parent=self.mainWindow)
 
         self.mainWindow.mainloop()
 
@@ -228,12 +233,12 @@ class gui():
 
     def setupMainWindow(self):
         self.mainWindow.configure(background="#1e1e1e")
-        rows= [0, 1]
-        columns = [0, 1, 2, 3]
+        rows= [0, 1, 2]
+        columns = [0, 1, 2]
         for row in rows:
             self.mainWindow.rowconfigure(row, weight=1)
         for column in columns:
-            self.mainWindow.rowconfigure(column, weight=1)
+            self.mainWindow.columnconfigure(column, weight=1)
         self.mainWindow.title("JavMetadataGenerator")
         self.mainWindow.iconbitmap(".\\app.ico")
 
@@ -243,5 +248,4 @@ async def main():
     await GUI.setup()
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())

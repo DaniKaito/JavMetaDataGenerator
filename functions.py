@@ -7,11 +7,34 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
+import tkinter
+from tkinter import *
+
+
+class textBox():
+    def __init__(self):
+        pass
+
+    def setup(self, parentWindow, bg, fg, row, column, columnspan):
+        self.box = tkinter.Text(master=parentWindow, bg=bg, height=4, width=100,
+                           foreground=fg, font=("Robotodo", 11))
+        self.box.grid(row=row, column=column, columnspan=columnspan, padx=5, pady=5)
+    
+    def writeInBox(self, text):
+        self.box.insert(END, text)
 
 fm = JavMetadataGenerator.FileManager()
 cm = JavMetadataGenerator.CsvManager()
+console = textBox()
+
+def setupConsole(parent):
+    console.setup(parentWindow=parent, bg="#282828",
+                        fg="#c7c7c7", row=2, column=0, columnspan=8)
 
 async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, excludeCsvFilePath):
+    if ".csv" not in newCsvFilePath:
+        newCsvFilePath += newCsvFilePath
+    console.writeInBox(text="Starting to scan javlibrary\n")
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
@@ -54,6 +77,7 @@ async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, e
         excludeIds = cm.loadCsvFile(filePath=excludeCsvFilePath)['JAVID'].values.tolist()
     else:
         excludeIds = []
+    console.writeInBox(text="Finished analyzing javlibary urls\nNow compiling the csv file\n")
     for javID in javidList:
         if javID not in excludeIds:
             if javID in compareIds:
@@ -62,31 +86,34 @@ async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, e
                 videoData = fm.standardInfoDict
                 videoData[JavMetadataGenerator.indexColumnName] = javID
             cm.appendRow(filePath=newCsvFilePath, info=videoData)
+    console.writeInBox(text="Created new csv file successfully\n\n\n")
 
 async def scanNewCsv(scanPath, fileName, subFolders=False):
     if subFolders:
-        print(f"SUB-FOLDERS SCAN OPTION FOUND")
+        console.writeInBox(text="Sub-folders scan option found\n")
     if ".csv" not in fileName:
         fileName += ".csv"
     cm.createEmptyCsvFile(filePath=fileName)
     fm.files = []
     for file in fm.getFileList(scanPath=scanPath, subFolders=subFolders):
+        console.writeInBox(text=f"Now analyzing the following file: {file}\n")
         file = os.path.join(scanPath, file)
         fileInfo = fm.getVideoData(file=file)
         cm.appendRow(filePath=fileName, info=fileInfo)
         await asyncio.sleep(0.001)
-    print(f"NEW CSV FILE CREATED WITH SUCCESS")
+    console.writeInBox(text=f"Created new csv file successfully\n\n\n")
 
 async def exportHtml(filePath):
     cm.saveAsHtml(filePath=filePath)
+    console.writeInBox(text=f"{filePath} successfully exported\n\n\n")
 
 async def deleteRow(filePath, id):
     cm.removeRow(filePath=filePath, rowID=id)
+    console.writeInBox(text=f"{id} successfully deleted from {filePath}\n\n\n")
 
 #same as update, but removes the files that aren't in the path anymore from the csv file
 async def trim(filePath, scanPath, subFolders):
-    if subFolders:
-        print(f"SUB-FOLDERS SCAN OPTION FOUND")
+    console.writeInBox(text="Starting trim\n")
     if ".csv" not in filePath:
         filePath += ".csv"
     df = cm.loadCsvFile(filePath=filePath)
@@ -97,16 +124,15 @@ async def trim(filePath, scanPath, subFolders):
     count = 0
     for id in ids:
         if id not in files:
-            print(f"No file found for the following id: {id}. It will be removed")
             cm.removeRow(filePath=filePath, rowID=id)
             count += 1
-    print(f"TRIM SUCCESSFUL: A total of {count} rows had been eliminated")
+    print(f"TRIM SUCCESSFUL: A total of {count} rows had been eliminated\n\n")
     update(filePath=filePath, scanPath=scanPath)
 
 #analyzes files video file in a path if their last modification date has been modified from the one stored inside the csv file
 async def update(filePath, scanPath, subFolders):
     if subFolders:
-        print(f"SUB-FOLDERS SCAN OPTION FOUND")
+        console.writeInBox(text="Sub-folders scan option found\n")
     if ".csv" not in filePath:
         filePath += ".csv"
     df = cm.loadCsvFile(filePath=filePath)
@@ -117,29 +143,29 @@ async def update(filePath, scanPath, subFolders):
         fileName = file.split("\\")[-1].split(".")[0]
         for item in items:
             if fileName == item[0]:
-                print(f"Found the following file in the csv: {file}")
+                console.writeInBox(text=f"Found the following file in the csv: {file}\n")
                 found = True
                 lastModificationDate = datetime.datetime.fromtimestamp(os.path.getmtime(file)).strftime("%d-%m-%Y %H:%M:%S")
                 if lastModificationDate != item[1]:
-                    print("Last modification date is different, it will be analyzed")
+                    console.writeInBox(text="Last modification date is different, it will be analyzed\n")
                     fileInfo = fm.getVideoData(file=file)
                     cm.appendRow(filePath=filePath, info=fileInfo)
                 else:
-                    print(f"Last modification date is the same, it will be skipped")
+                    print(f"Last modification date is the same, it will be skipped\n")
                 break
         if not found:
-            print(f"No row found for the following file in the csv: {file}\nIt will be now analyzed")
+            console.writeInBox(text=f"No row found for the following file in the csv: {file}\nIt will be now analyzed")
             fileInfo = fm.getVideoData(file=file)
             cm.appendRow(filePath=filePath, info=fileInfo)
         print("\n\n")
         await asyncio.sleep(0.001)
-    print(f"UPDATE SUCCESSFUL")
+    console.writeInBox(text=f"Update Successful\n\n\n")
 
 async def merge(savePath, csv1, csv2):
     if ".csv" not in savePath:
         savePath += ".csv"
     cm.concatDataFrames(savePath=savePath, filePath1=csv1, filePath2=csv2)
-    print(f"MERGE SUCCESSFUL")
+    console.writeInBox(text=f"Merge Successful\n\n\n")
 
 async def compare(savePath, csv1, csv2):
     if os.path.isfile(savePath):
@@ -152,4 +178,4 @@ async def compare(savePath, csv1, csv2):
         print(f"The following dir doesn't exist, now creating it")
         os.mkdir(savePath)
     cm.compareDataFrames(savePath=savePath, filePath1=csv1, filePath2=csv2)
-    print(f"COMPARE SUCCESSFUL")
+    console.writeInBox(text=f"Compare Successful\n\n\n")
