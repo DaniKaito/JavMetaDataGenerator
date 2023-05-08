@@ -133,7 +133,7 @@ class gui():
 
     async def defineDeleteWindow(self):
         deleteRecord = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT ID OF THE ROW TO DELETE",
-                                    scanPath=False, labelText="DELETE", row=0, column=0, filters=[("Comma separated values", ".csv")],
+                                    scanPath=False, labelText="DELETE", row=1, column=0, filters=[("Comma separated values", ".csv")],
                                     nameSelector=True, nameExplorer=True, nameFieldLabel="INSERT CSV FILE PATH")
 
         deleteRowBtn = button(parentWindow=deleteRecord.frame, text="DELETE ROW",
@@ -143,7 +143,7 @@ class gui():
 
     async def defineExportHtmlWindow(self):
         exportHtml = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT CSV FILE PATH",
-                                  filters=[("Comma separated values", ".csv")], labelText="EXPORT AS HTML", row=0, column=1)
+                                  filters=[("Comma separated values", ".csv")], labelText="EXPORT AS HTML", row=1, column=1)
 
         exportBtn = button(parentWindow=exportHtml.frame, text="EXPORT AS HTML",
                            command=lambda: self.runAsync(functionTarget=functions.exportHtml(filePath=exportHtml.entryVar.get())))
@@ -152,7 +152,7 @@ class gui():
     async def defineCreateCsvWindow(self):
         createCsv = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT PATH TO SCAN",
                                 askFile=False, labelText="CREATE CSV FILE", nameSelector=True,
-                                nameFieldLabel="INSERT CSV FILE NAME", row=1, column=0)
+                                nameFieldLabel="INSERT CSV FILE NAME", row=0, column=0)
         checkBoxVar = tkinter.BooleanVar(createCsv.frame)
         subFolderSearchBtn = checkBox(parentWindow=createCsv.frame, text="SEARCH IN SUB-FOLDERS",
                                       var=checkBoxVar, bg="#282828", fg="#c7c7c7", padx=5, pady=5)
@@ -164,8 +164,8 @@ class gui():
         return createCsv
 
     async def definCrossCheckWindow(self):
-        crossCheck = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT CSV FILE",
-                                askFile=True, filters=[("Comma separated values", ".csv")], labelText="CROSS CHECK", row=0, column=2)
+        crossCheck = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT CSV FILE PATH",
+                                askFile=True, filters=[("Comma separated values", ".csv")], labelText="CROSS CHECK", row=1, column=2)
 
         newCsvBtn = button(parentWindow=crossCheck.frame, text="CHECK",
                            command=lambda: self.runAsync(functionTarget=CrossCheck.main(crossCheck.entryVar.get())))
@@ -174,7 +174,7 @@ class gui():
     async def defineUpdateTableWindow(self):
         updateCsv = pathSelector(parentWindow=self.mainWindow, needFrame=True, entryLabelText="INSERT PATH TO SCAN",
                                  askFile=False, labelText="UPDATE CSV FILE", nameSelector=True, nameExplorer=True,
-                                 nameFieldLabel="INSERT CSV FILE NAME", row=1, column=1)
+                                 nameFieldLabel="INSERT CSV FILE PATH", row=0, column=1)
 
         checkBoxVar = tkinter.BooleanVar(updateCsv.frame)
         subFolderSearchBtn = checkBox(parentWindow=updateCsv.frame, text="SEARCH IN SUB-FOLDERS",
@@ -193,16 +193,16 @@ class gui():
 
     async def defineCompareMergeWindow(self):
         csvPathSelector = pathSelector(parentWindow=self.mainWindow, needFrame=True,
-                                                entryLabelText="INSERT CSV FILE PATH",
+                                                entryLabelText="INSERT MAIN CSV FILE PATH",
                                                 filters=[("Comma separated values", ".csv")],
-                                                labelText="COMPARE/MERGE", row=1, column=2)
+                                                labelText="COMPARE/MERGE", row=0, column=2)
         csvPathSelector2 = pathSelector(parentWindow=csvPathSelector.frame, needFrame=False,
-                                                entryLabelText="INSERT CSV FILE PATH",
+                                                entryLabelText="INSERT SECONDARY CSV FILE PATH",
                                                 filters=[("Comma separated values", ".csv")],
-                                                labelText="", row=1, column=2)
+                                                labelText="", row=0, column=2)
         newCsvNameSelector = pathSelector(parentWindow=csvPathSelector.frame, needFrame=False,
-                                          entryLabelText="INSERT NEW CSV FILE PATH/NAME",
-                                          scanPath=False, row=1, column=2)
+                                          entryLabelText="INSERT NEW CSV FILE NAME",
+                                          scanPath=False, row=0, column=2)
 
         mergeBtn = button(parentWindow=csvPathSelector.frame, text="MERGE",
                            command=lambda: self.runAsync(functionTarget=functions.merge(savePath=newCsvNameSelector.entryVar.get(),

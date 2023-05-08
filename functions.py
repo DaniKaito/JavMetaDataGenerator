@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 import tkinter
 from tkinter import *
+from datetime import datetime
 
 
 class textBox():
@@ -21,7 +22,12 @@ class textBox():
         self.box.grid(row=row, column=column, columnspan=columnspan, padx=5, pady=5)
     
     def writeInBox(self, text):
-        self.box.insert(END, text)
+        timeStamp = datetime.now().strftime("[%H:%M:%S]")
+        text = timeStamp + text
+        self.box.insert(INSERT, text)
+    
+    def deleteAll(self):
+        self.box.delete("1.0", END)
 
 fm = JavMetadataGenerator.FileManager()
 cm = JavMetadataGenerator.CsvManager()
@@ -32,6 +38,7 @@ def setupConsole(parent):
                         fg="#c7c7c7", row=2, column=0, columnspan=8)
 
 async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, excludeCsvFilePath):
+    console.deleteAll()
     if ".csv" not in newCsvFilePath:
         newCsvFilePath += ".csv"
     console.writeInBox(text="Starting to scan javlibrary\n")
@@ -89,6 +96,7 @@ async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, e
     console.writeInBox(text="Created new csv file successfully\n\n\n")
 
 async def scanNewCsv(scanPath, fileName, subFolders=False):
+    console.deleteAll()
     if subFolders:
         console.writeInBox(text="Sub-folders scan option found\n")
     if ".csv" not in fileName:
@@ -104,15 +112,18 @@ async def scanNewCsv(scanPath, fileName, subFolders=False):
     console.writeInBox(text=f"Created new csv file successfully\n\n\n")
 
 async def exportHtml(filePath):
+    console.deleteAll()
     cm.saveAsHtml(filePath=filePath)
     console.writeInBox(text=f"{filePath} successfully exported\n\n\n")
 
 async def deleteRow(filePath, id):
+    console.deleteAll()
     cm.removeRow(filePath=filePath, rowID=id)
     console.writeInBox(text=f"{id} successfully deleted from {filePath}\n\n\n")
 
 #same as update, but removes the files that aren't in the path anymore from the csv file
 async def trim(filePath, scanPath, subFolders):
+    console.deleteAll()
     console.writeInBox(text="Starting trim\n")
     if ".csv" not in filePath:
         filePath += ".csv"
@@ -127,10 +138,11 @@ async def trim(filePath, scanPath, subFolders):
             cm.removeRow(filePath=filePath, rowID=id)
             count += 1
     print(f"TRIM SUCCESSFUL: A total of {count} rows had been eliminated\n\n")
-    update(filePath=filePath, scanPath=scanPath)
+    update(filePath=filePath, scanPath=scanPath, subFolders=subFolders)
 
 #analyzes files video file in a path if their last modification date has been modified from the one stored inside the csv file
 async def update(filePath, scanPath, subFolders):
+    console.deleteAll()
     if subFolders:
         console.writeInBox(text="Sub-folders scan option found\n")
     if ".csv" not in filePath:
@@ -162,12 +174,14 @@ async def update(filePath, scanPath, subFolders):
     console.writeInBox(text=f"Update Successful\n\n\n")
 
 async def merge(savePath, csv1, csv2):
+    console.deleteAll()
     if ".csv" not in savePath:
         savePath += ".csv"
     cm.concatDataFrames(savePath=savePath, filePath1=csv1, filePath2=csv2)
     console.writeInBox(text=f"Merge Successful\n\n\n")
 
 async def compare(savePath, csv1, csv2):
+    console.deleteAll()
     if os.path.isfile(savePath):
         print("The path given for the comparison is a file, saving the files inside the same dir as that file")
         dirs = savePath.split("\\")
