@@ -82,10 +82,11 @@ async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, e
     compareDf = cm.loadCsvFile(filePath=compareCsvFilePath)
     compareIds = compareDf['JAVID'].values.tolist()
     if excludeCsvFilePath != "":
+        console.writeInBox(text="Found excluded ids\n")
         excludeIds = cm.loadCsvFile(filePath=excludeCsvFilePath)['JAVID'].values.tolist()
     else:
         excludeIds = []
-    console.writeInBox(text="Finished analyzing javlibary urls\nNow compiling the csv file\n")
+    console.writeInBox(text="Finished analyzing javlibary urls - Now compiling the csv file\n")
     for javID in javidList:
         if javID not in excludeIds:
             if javID in compareIds:
@@ -197,6 +198,6 @@ async def compare(savePath, csv1, csv2):
 
 async def crossCheck(filePath):
     console.deleteAll()
-    console.write(text=f"Cross Check started\n")
+    console.writeInBox(text=f"Cross Check started\n")
     await CrossCheck.main(filePath)
     console.writeInBox(text="Cross Check finished")
