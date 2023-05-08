@@ -122,25 +122,6 @@ async def deleteRow(filePath, id):
     cm.removeRow(filePath=filePath, rowID=id)
     console.writeInBox(text=f"{id} successfully deleted from {filePath}")
 
-#same as update, but removes the files that aren't in the path anymore from the csv file
-async def trim(filePath, scanPath, subFolders):
-    console.deleteAll()
-    console.writeInBox(text="Starting trim\n")
-    if ".csv" not in filePath:
-        filePath += ".csv"
-    df = cm.loadCsvFile(filePath=filePath)
-    ids = df["JAVID"].values.tolist()
-    fm.files = []
-    files = fm.getFileList(scanPath=scanPath, subFolders=subFolders)
-    files = [file.split("\\")[-1].split(".")[0] for file in files]
-    count = 0
-    for id in ids:
-        if id not in files:
-            cm.removeRow(filePath=filePath, rowID=id)
-            count += 1
-    print(f"TRIM SUCCESSFUL: A total of {count} rows had been eliminated")
-    update(filePath=filePath, scanPath=scanPath, subFolders=subFolders)
-
 #analyzes files video file in a path if their last modification date has been modified from the one stored inside the csv file
 async def update(filePath, scanPath, subFolders):
     console.deleteAll()
@@ -173,6 +154,25 @@ async def update(filePath, scanPath, subFolders):
         print("\n\n")
         await asyncio.sleep(0.001)
     console.writeInBox(text=f"Update Successful")
+
+#same as update, but removes the files that aren't in the path anymore from the csv file
+async def trim(filePath, scanPath, subFolders):
+    console.deleteAll()
+    console.writeInBox(text="Starting trim\n")
+    if ".csv" not in filePath:
+        filePath += ".csv"
+    df = cm.loadCsvFile(filePath=filePath)
+    ids = df["JAVID"].values.tolist()
+    fm.files = []
+    files = fm.getFileList(scanPath=scanPath, subFolders=subFolders)
+    files = [file.split("\\")[-1].split(".")[0] for file in files]
+    count = 0
+    for id in ids:
+        if id not in files:
+            cm.removeRow(filePath=filePath, rowID=id)
+            count += 1
+    print(f"TRIM SUCCESSFUL: A total of {count} rows had been eliminated")
+    await update(filePath=filePath, scanPath=scanPath, subFolders=subFolders)
 
 async def merge(savePath, csv1, csv2):
     console.deleteAll()
