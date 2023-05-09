@@ -178,7 +178,7 @@ class FileManager():
         info["AVERAGE_BIT_RATE"] = [self.runMediaInfo(stream="General", outputParameter="%OverallBitRate/String%", filePath=file)]
         info["VIDEO_BIT_RATE"] = [self.runMediaInfo(stream="Video", outputParameter="%BitRate/String%", filePath=file)]
         if info["VIDEO_BIT_RATE"] == ["N/A"]:
-            info["VIDEO_BIT_RATE"] = [self.runMediaInfo(stream="General", outputParameter="%BitRate_Nominal/String%", filePath=file)]
+            info["VIDEO_BIT_RATE"] = [self.runMediaInfo(stream="Video", outputParameter="%BitRate_Nominal/String%", filePath=file)]
         info["AUDIO_BIT_RATE"] = [self.runMediaInfo(stream="Audio", outputParameter="%BitRate/String%", filePath=file)]
         info["CODEC"] = [self.runMediaInfo(stream="Video", outputParameter="%CodecID%", filePath=file)]
         info["RESOLUTION"] = ["x".join([self.runMediaInfo(stream="Video", outputParameter="%Width%", filePath=file),
