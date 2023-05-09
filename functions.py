@@ -249,7 +249,7 @@ async def multiPart(filePath):
                     videoInfo["RUNTIME"] = [int(videoInfo["RUNTIME"][0]) + int(partInfo["RUNTIME"][0])]
                     videoInfo["DURATION"] = [getSecondsFromTimeStamp(videoInfo["DURATION"][0]) + getSecondsFromTimeStamp(partInfo["DURATION"][0])]
                     videoInfo["DURATION"] = [time.strftime("%H:%M:%S", time.gmtime(videoInfo["DURATION"][0]))]
-                    cm.removeRow(rowID=id, filePath=filePath)
+                cm.removeRow(rowID=id, filePath=filePath)
                 cm.appendRow(filePath=filePath, info=videoInfo)
     console.writeInBox(text="Multipart check completed")    
     
