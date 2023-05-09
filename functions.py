@@ -241,7 +241,6 @@ async def multiPart(filePath):
                     videoInfo = cm.getRow(rowID=partID, dataFrame=cm.loadCsvFile(filePath=filePath))
                     videoInfo[JavMetadataGenerator.indexColumnName] = [id]
                     videoInfo["FULL_PATH"] = ["MULTIPART-GENERATED"]
-                    cm.appendRow(filePath=filePath, info=videoInfo)
                 else:
                     videoInfo = cm.getRow(rowID=id, dataFrame=cm.loadCsvFile(filePath=filePath))
                     partInfo = cm.getRow(rowID=partID, dataFrame=cm.loadCsvFile(filePath=filePath))
@@ -250,7 +249,8 @@ async def multiPart(filePath):
                     videoInfo["RUNTIME"] = [int(videoInfo["RUNTIME"][0]) + int(partInfo["RUNTIME"][0])]
                     videoInfo["DURATION"] = [getSecondsFromTimeStamp(videoInfo["DURATION"][0]) + getSecondsFromTimeStamp(partInfo["DURATION"][0])]
                     videoInfo["DURATION"] = [time.strftime("%H:%M:%S", time.gmtime(videoInfo["DURATION"][0]))]
-                    cm.appendRow(filePath=filePath, info=videoInfo)
+                    cm.removeRow(rowID=id, filePath=filePath)
+                cm.appendRow(filePath=filePath, info=videoInfo)
     console.writeInBox(text="Multipart check completed")    
     
     
