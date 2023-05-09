@@ -61,7 +61,7 @@ class CsvManager():
     def concatDataFrames(self, savePath, filePath1, filePath2):
         df1 = self.loadCsvFile(filePath1)
         df2 = self.loadCsvFile(filePath2)
-        df = pd.concat([df1,df2]).drop_duplicates(subset=indexColumnName, keep="first").reset_index(drop=True)
+        df = pd.concat([df1,df2]).drop_duplicates(subset=indexColumnName).reset_index(drop=True)
         print(f"Merge successful")
         self.saveCsv(savePath, df)
 
@@ -177,6 +177,8 @@ class FileManager():
             info["FRAME_RATE"] = "N/A"
         info["AVERAGE_BIT_RATE"] = [self.runMediaInfo(stream="General", outputParameter="%OverallBitRate/String%", filePath=file)]
         info["VIDEO_BIT_RATE"] = [self.runMediaInfo(stream="Video", outputParameter="%BitRate/String%", filePath=file)]
+        if info["VIDEO_BIT_RATE"] == ["N/A"]:
+            info["VIDEO_BIT_RATE"] = [self.runMediaInfo(stream="General", outputParameter="%BitRate_Nominal/String%", filePath=file)]
         info["AUDIO_BIT_RATE"] = [self.runMediaInfo(stream="Audio", outputParameter="%BitRate/String%", filePath=file)]
         info["CODEC"] = [self.runMediaInfo(stream="Video", outputParameter="%CodecID%", filePath=file)]
         info["RESOLUTION"] = ["x".join([self.runMediaInfo(stream="Video", outputParameter="%Width%", filePath=file),

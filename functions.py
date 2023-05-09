@@ -10,7 +10,10 @@ from selenium import webdriver
 import tkinter
 from tkinter import *
 import CrossCheck
+import time
 
+
+multiPartIndicators = ["-pt", "_"]
 
 class textBox():
     def __init__(self):
@@ -126,6 +129,7 @@ async def scanNewCsv(scanPath, fileName, subFolders=False):
         cm.appendRow(filePath=fileName, info=fileInfo)
         await asyncio.sleep(0.001)
     console.writeInBox(text=f"Created new csv file successfully")
+    await multiPart(filePath=fileName)
 
 async def exportHtml(filePath):
     console.deleteAll()
@@ -169,6 +173,7 @@ async def update(filePath, scanPath, subFolders):
         print("\n\n")
         await asyncio.sleep(0.001)
     console.writeInBox(text=f"Update Successful")
+    await multiPart(filePath=filePath)
 
 #same as update, but removes the files that aren't in the path anymore from the csv file
 async def trim(filePath, scanPath, subFolders):
@@ -215,3 +220,38 @@ async def crossCheck(filePath):
     console.writeInBox(text=f"Cross Check started\n")
     await CrossCheck.main(filePath)
     console.writeInBox(text="Cross Check finished")
+
+def getSecondsFromTimeStamp(timeStamp, splitValue=":"):
+    h, m, s = [int(i) for i in timeStamp.split(splitValue)]
+    s += 60 * m + 3600 * h
+    return s
+
+async def multiPart(filePath):
+    df = cm.loadCsvFile(filePath=filePath)
+    ids = df[JavMetadataGenerator.indexColumnName]
+    console.writeInBox(text="\n\nNow checking for multiparts\n")
+    multiPartIds = []
+    for partID in ids:
+        for indicator in multiPartIndicators:
+            if indicator in partID:
+                console.writeInBox(text=f"Now processing the following id {partID}\n")
+                id = partID.split(indicator)[0]
+                if id not in multiPartIds:
+                    multiPartIds.append(id)
+                    videoInfo = cm.getRow(rowID=partID, dataFrame=cm.loadCsvFile(filePath=filePath))
+                    videoInfo[JavMetadataGenerator.indexColumnName] = [id]
+                    videoInfo["FULL_PATH"] = ["MULTIPART-GENERATED"]
+                    cm.appendRow(filePath=filePath, info=videoInfo)
+                else:
+                    videoInfo = cm.getRow(rowID=id, dataFrame=cm.loadCsvFile(filePath=filePath))
+                    partInfo = cm.getRow(rowID=partID, dataFrame=cm.loadCsvFile(filePath=filePath))
+                    videoInfo["MB"] = [int(videoInfo["MB"][0]) + int(partInfo["MB"][0])]
+                    videoInfo["GB"] = [float(videoInfo["GB"][0]) + float(partInfo["GB"][0])]
+                    videoInfo["RUNTIME"] = [int(videoInfo["RUNTIME"][0]) + int(partInfo["RUNTIME"][0])]
+                    videoInfo["DURATION"] = [getSecondsFromTimeStamp(videoInfo["DURATION"][0]) + getSecondsFromTimeStamp(partInfo["DURATION"][0])]
+                    videoInfo["DURATION"] = [time.strftime("%H:%M:%S", time.gmtime(videoInfo["DURATION"][0]))]
+                    cm.appendRow(filePath=filePath, info=videoInfo)
+    console.writeInBox(text="Multipart check completed")    
+    
+    
+
