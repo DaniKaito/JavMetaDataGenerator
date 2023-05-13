@@ -240,8 +240,6 @@ class gui():
         for column in columns:
             self.mainWindow.columnconfigure(column, weight=1)
         self.mainWindow.title("JavMetadataGenerator")
-        self.mainWindow.iconbitmap(".\\app.ico")
-
 
 async def main():
     GUI = gui()

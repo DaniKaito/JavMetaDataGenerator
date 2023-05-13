@@ -16,12 +16,14 @@ class CsvManager():
     #CREATES PANDAS DATAFRAME FROM CSV FILE GIVEN ITS PATH
     def loadCsvFile(self, filePath):
         df = pd.read_csv(filePath)
+        df[indexColumnName] = df[indexColumnName].astype(str)
         return df
 
     #SAVE A CSV FILE GIVEN ITS PATH AND NEW DATAFRAME
     def saveCsv(self, filePath, dataFrame):
         try:
-            dataFrame = dataFrame.sort_values(indexColumnName)
+            dataFrame[indexColumnName] = dataFrame[indexColumnName].astype(str)
+            dataFrame = dataFrame.sort_values(by=indexColumnName)
             dataFrame.reset_index(drop=True)
             dataFrame.to_csv(filePath, encoding="utf-8", index=False)
             print(f"Saved the following file: {filePath}")
@@ -169,7 +171,7 @@ class FileManager():
     def getVideoData(self, file):
         print(f"\n\nNow analyzing the following file: {file}")
         info = self.standardInfoDict
-        info["JAVID"] = [file.split("\\")[-1].split(".")[0]]
+        info["JAVID"] = [str(file.split("\\")[-1].split(".")[0])]
         info["EXTENSION"] = [file.split(".")[-1]]
         try:
             info["FRAME_RATE"] = [round(float(self.runMediaInfo(stream="Video", outputParameter="%FrameRate%", filePath=file)))]
