@@ -114,6 +114,7 @@ class gui():
         self.updateTableWindow = await self.defineUpdateTableWindow()
         self.compareMergeWindow = await self.defineCompareMergeWindow()
         self.javLibraryWindow = await self.defineJavLibraryWindow()
+        self.sortWindow = await self.defineSortWindow()
         functions.setupConsole(parent=self.mainWindow)
 
         self.mainWindow.mainloop()
@@ -236,7 +237,6 @@ class gui():
                               labelText="JAVLIBRARY", nameSelector=True,
                               nameFieldLabel="INSERT JAVLIBRARY URL",
                               row=0, column=3)
-        javLib.frame.grid_configure(rowspan=2)
         csvPathSelector = pathSelector(parentWindow=javLib.frame, needFrame=False,
                                        entryLabelText="INSERT CSV FILE PATH TO BE EXCLUDED",
                                        nameSelector=True, nameFieldLabel="INSERT CSV FILE PATH TO BE COMPARED",
@@ -247,6 +247,27 @@ class gui():
                                                                                            compareCsvFilePath=csvPathSelector.nameSelectorVar.get(),
                                                                                            excludeCsvFilePath=csvPathSelector.entryVar.get())))
         return javLib
+
+    async def defineSortWindow(self):
+        sort = frame(parentWindow=self.mainWindow, padx=5, pady=5, bg="#282828",
+                     row=1, column=3)
+        sortLabel = label(parentWindow=sort.frame, labelText="INSERT SORT COLUMN",
+                          padx=5, pady=5, bg="#282828", fg="#ffffff", fontSize=20)
+        instructionlabel = label(parentWindow=sort.frame, labelText="Choose one of the following",
+                          padx=5, pady=5, bg="#282828", fg="#ffffff", fontSize=11)
+        options = {"JavID":"JAVID", "Size Mb":"MB", "Duration":"RUNTIME", "Average Bit Rate":"AVERAGE_BIT_RATE", "Video Bit Rate":"VIDEO_BIT_RATE"}
+        sortVar = tkinter.StringVar(sort.frame)
+        for key in list(options.keys()):
+            radioBtn = tkinter.Radiobutton(master=sort.frame, text=key,
+                                           value=options[key], variable=sortVar,
+                                           bg="#282828", fg="#ffffff", activebackground="#282828",
+                                           activeforeground="#ffffff", selectcolor="#282828",
+                                           command= lambda: functions.setSort(sortColumn=sortVar.get())
+                                           )
+            radioBtn.pack(padx=5, pady=5, anchor=tkinter.W)
+        functions.setSort(sortColumn="JAVID")
+            
+
 
     def setupMainWindow(self):
         self.mainWindow.configure(background="#1e1e1e")

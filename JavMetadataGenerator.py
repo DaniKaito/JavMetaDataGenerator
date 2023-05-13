@@ -11,7 +11,7 @@ columnNames = [indexColumnName, "EXTENSION", "FRAME_RATE", "AVERAGE_BIT_RATE", "
 
 class CsvManager():
     def __init__(self):
-        pass
+        self.sortColumn = indexColumnName
 
     #CREATES PANDAS DATAFRAME FROM CSV FILE GIVEN ITS PATH
     def loadCsvFile(self, filePath):
@@ -19,11 +19,15 @@ class CsvManager():
         df[indexColumnName] = df[indexColumnName].astype(str)
         return df
 
+    def sort(self, dataframe):
+        dataframe = dataframe.sort_values(by=self.sortColumn)
+        return dataframe
+
     #SAVE A CSV FILE GIVEN ITS PATH AND NEW DATAFRAME
     def saveCsv(self, filePath, dataFrame):
         try:
             dataFrame[indexColumnName] = dataFrame[indexColumnName].astype(str)
-            dataFrame = dataFrame.sort_values(by=indexColumnName)
+            dataFrame = self.sort(dataframe=dataFrame)
             dataFrame.reset_index(drop=True)
             dataFrame.to_csv(filePath, encoding="utf-8", index=False)
             print(f"Saved the following file: {filePath}")

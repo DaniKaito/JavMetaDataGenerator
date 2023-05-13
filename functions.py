@@ -235,6 +235,10 @@ def getSecondsFromTimeStamp(timeStamp, splitValue=":"):
     s += 60 * m + 3600 * h
     return s
 
+def setSort(sortColumn):
+    cm.sortColumn = sortColumn
+    print(f"Changed sort column to {cm.sortColumn}")
+
 async def multiPart(filePath):
     df = cm.loadCsvFile(filePath=filePath)
     ids = df[JavMetadataGenerator.indexColumnName]
