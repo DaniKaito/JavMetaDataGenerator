@@ -114,7 +114,15 @@ async def scanJavlibraryURL(javLibraryURL, newCsvFilePath, compareCsvFilePath, e
             cm.appendRow(filePath=newCsvFilePath, info=videoData)
     console.writeInBox(text="Created new csv file successfully")
 
-async def scanNewCsv(scanPath, fileName, subFolders=False):
+def checkMinSize(minSize):
+    if minSize == "":
+        return None
+    else:
+        return int(minSize)
+
+
+async def scanNewCsv(scanPath, fileName, subFolders=False, minSize=None):
+    checkMinSize(minSize=minSize)
     console.deleteAll()
     if subFolders:
         console.writeInBox(text="Sub-folders scan option found\n")
@@ -125,7 +133,7 @@ async def scanNewCsv(scanPath, fileName, subFolders=False):
     for file in fm.getFileList(scanPath=scanPath, subFolders=subFolders):
         console.writeInBox(text=f"Now analyzing the following file: {file}\n")
         file = os.path.join(scanPath, file)
-        fileInfo = fm.getVideoData(file=file)
+        fileInfo = fm.getVideoData(file=file, minSize=minSize)
         cm.appendRow(filePath=fileName, info=fileInfo)
         await asyncio.sleep(0.001)
     console.writeInBox(text=f"Created new csv file successfully")
@@ -142,7 +150,8 @@ async def deleteRow(filePath, id):
     console.writeInBox(text=f"{id} successfully deleted from {filePath}")
 
 #analyzes files video file in a path if their last modification date has been modified from the one stored inside the csv file
-async def update(filePath, scanPath, subFolders):
+async def update(filePath, scanPath, subFolders, minSize=""):
+    checkMinSize(minSize=minSize)
     console.deleteAll()
     if subFolders:
         console.writeInBox(text="Sub-folders scan option found\n")
@@ -161,7 +170,7 @@ async def update(filePath, scanPath, subFolders):
                 lastModificationDate = datetime.datetime.fromtimestamp(os.path.getmtime(file)).strftime("%d-%m-%Y %H:%M:%S")
                 if lastModificationDate != item[1]:
                     console.writeInBox(text="Last modification date is different, it will be analyzed\n")
-                    fileInfo = fm.getVideoData(file=file)
+                    fileInfo = fm.getVideoData(file=file, minSize=minSize)
                     cm.appendRow(filePath=filePath, info=fileInfo)
                 else:
                     print(f"Last modification date is the same, it will be skipped\n")
@@ -176,7 +185,7 @@ async def update(filePath, scanPath, subFolders):
     await multiPart(filePath=filePath)
 
 #same as update, but removes the files that aren't in the path anymore from the csv file
-async def trim(filePath, scanPath, subFolders):
+async def trim(filePath, scanPath, subFolders, minSize=None):
     console.deleteAll()
     console.writeInBox(text="Starting trim\n")
     if ".csv" not in filePath:
@@ -192,7 +201,7 @@ async def trim(filePath, scanPath, subFolders):
             cm.removeRow(filePath=filePath, rowID=id)
             count += 1
     print(f"TRIM SUCCESSFUL: A total of {count} rows had been eliminated")
-    await update(filePath=filePath, scanPath=scanPath, subFolders=subFolders)
+    await update(filePath=filePath, scanPath=scanPath, subFolders=subFolders, minSize=minSize)
 
 async def merge(savePath, csv1, csv2):
     console.deleteAll()

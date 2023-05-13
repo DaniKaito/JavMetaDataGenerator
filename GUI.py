@@ -11,12 +11,16 @@ import asyncio
 
 
 class checkBox():
-    def __init__(self, parentWindow, text, padx, pady, bg, fg, var):
+    def __init__(self, parentWindow, text, padx, pady, bg, fg, var, command=None):
         checkBtn = tkinter.Checkbutton(master=parentWindow, text=text,
                             variable=var, background=bg, activeforeground=fg,
                             foreground=fg, selectcolor=bg, activebackground=bg,
+                            command=command
                             )
         checkBtn.pack(pady=pady, padx=padx)
+
+
+        
 
 class frame():
     def __init__(self, parentWindow, padx, pady, bg, row, column):
@@ -35,6 +39,13 @@ class entry():
                                    background="#323232", foreground="#ffffff",
                                    font=("Robotodo", 11), borderwidth=3)
         self.entry.pack(pady=pady, padx=padx)
+class minSizeInput():
+    def __init__(self, parentWindow):
+        self.label = label(parentWindow=parentWindow, labelText="INSERT MIN FILE SIZE (IN MB), LEAVE BLANK IF NONE",
+                           padx=5, pady=5, bg="#282828", fg="#c7c7c7", fontSize=8)
+        self.entryVar = tkinter.StringVar(parentWindow)
+        self.entry = entry(parentWindow=parentWindow, padx=5, pady=0, entryVar=self.entryVar)
+
 
 class button():
     def __init__(self, parentWindow, command, text="", side=None):
@@ -156,11 +167,14 @@ class gui():
         checkBoxVar = tkinter.BooleanVar(createCsv.frame)
         subFolderSearchBtn = checkBox(parentWindow=createCsv.frame, text="SEARCH IN SUB-FOLDERS",
                                       var=checkBoxVar, bg="#282828", fg="#c7c7c7", padx=5, pady=5)
+        
+        minSizeBtn = minSizeInput(parentWindow=createCsv.frame)
 
         newCsvBtn = button(parentWindow=createCsv.frame, text="GENERATE CSV",
                            command=lambda: self.runAsync(functionTarget=functions.scanNewCsv(scanPath=createCsv.entryVar.get(),
                                                                                             fileName=createCsv.nameSelectorVar.get(),
-                                                                                            subFolders=checkBoxVar.get())))
+                                                                                            subFolders=checkBoxVar.get(),
+                                                                                            minSize=minSizeBtn.entryVar.get())))
         return createCsv
 
     async def definCrossCheckWindow(self):
@@ -180,15 +194,18 @@ class gui():
         subFolderSearchBtn = checkBox(parentWindow=updateCsv.frame, text="SEARCH IN SUB-FOLDERS",
                                       var=checkBoxVar, bg="#282828", fg="#c7c7c7", padx=5, pady=5)
 
+        minSizeBtn = minSizeInput(parentWindow=updateCsv.frame)
+
         updateCsvBtn = button(parentWindow=updateCsv.frame, text="UPDATE",
                            command=lambda: self.runAsync(functionTarget=functions.update(scanPath=updateCsv.entryVar.get(),
                                                                                         filePath=updateCsv.nameSelectorVar.get(),
-                                                                                        subFolders=checkBoxVar.get())))
+                                                                                        subFolders=checkBoxVar.get(),
+                                                                                        minSize=minSizeBtn.entryVar.get())))
         trimBtn = button(parentWindow=updateCsv.frame, text="TRIM",
                            command=lambda: self.runAsync(functionTarget=functions.trim(scanPath=updateCsv.entryVar.get(),
                                                                                         filePath=updateCsv.nameSelectorVar.get(),
-                                                                                        subFolders=checkBoxVar.get())))
-
+                                                                                        subFolders=checkBoxVar.get(),
+                                                                                        minSize=minSizeBtn.entryVar.get())))
         return updateCsv
 
     async def defineCompareMergeWindow(self):

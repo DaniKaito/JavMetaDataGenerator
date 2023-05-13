@@ -168,9 +168,13 @@ class FileManager():
 
 
     #GET VIDEO METADATA
-    def getVideoData(self, file):
+    def getVideoData(self, file, minSize=None):
         print(f"\n\nNow analyzing the following file: {file}")
         info = self.standardInfoDict
+        info["MB"] = [os.path.getsize(file) // 1048576]
+        if minSize != None:
+            if info["MB"][0] < minSize:
+                return "sizeErr"
         info["JAVID"] = [str(file.split("\\")[-1].split(".")[0])]
         info["EXTENSION"] = [file.split(".")[-1]]
         try:
@@ -185,7 +189,6 @@ class FileManager():
         info["CODEC"] = [self.runMediaInfo(stream="Video", outputParameter="%CodecID%", filePath=file)]
         info["RESOLUTION"] = ["x".join([self.runMediaInfo(stream="Video", outputParameter="%Width%", filePath=file),
                                         self.runMediaInfo(stream="Video", outputParameter="%Height%", filePath=file)])]
-        info["MB"] = [os.path.getsize(file) // 1048576]
         info["GB"] = [round(info["MB"][0] / 1024, 2)]
         info["DURATION"] = [float(self.runMediaInfo(stream="Video", outputParameter="%Duration%", filePath=file)) // 1000]
         info["RUNTIME"] = [info["DURATION"][0] // 60]
