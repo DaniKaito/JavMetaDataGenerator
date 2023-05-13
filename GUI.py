@@ -251,12 +251,13 @@ class gui():
     async def defineSortWindow(self):
         sort = frame(parentWindow=self.mainWindow, padx=5, pady=5, bg="#282828",
                      row=1, column=3)
-        sortLabel = label(parentWindow=sort.frame, labelText="INSERT SORT COLUMN",
+        sortLabel = label(parentWindow=sort.frame, labelText="SORTING METHOD",
                           padx=5, pady=5, bg="#282828", fg="#ffffff", fontSize=20)
-        instructionlabel = label(parentWindow=sort.frame, labelText="Choose one of the following",
-                          padx=5, pady=5, bg="#282828", fg="#ffffff", fontSize=11)
+        instructionlabel = label(parentWindow=sort.frame, labelText="CHOOSE ONE OF THE FOLLOWING",
+                          padx=5, pady=5, bg="#282828", fg="#c7c7c7", fontSize=11)
         options = {"JavID":"JAVID", "Size Mb":"MB", "Duration":"RUNTIME", "Average Bit Rate":"AVERAGE_BIT_RATE", "Video Bit Rate":"VIDEO_BIT_RATE"}
         sortVar = tkinter.StringVar(sort.frame)
+        radioList = []
         for key in list(options.keys()):
             radioBtn = tkinter.Radiobutton(master=sort.frame, text=key,
                                            value=options[key], variable=sortVar,
@@ -265,8 +266,9 @@ class gui():
                                            command= lambda: functions.setSort(sortColumn=sortVar.get())
                                            )
             radioBtn.pack(padx=5, pady=5, anchor=tkinter.W)
+            radioList.append(radioBtn)
         functions.setSort(sortColumn="JAVID")
-            
+        radioList[0].select()
 
 
     def setupMainWindow(self):

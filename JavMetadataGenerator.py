@@ -173,11 +173,12 @@ class FileManager():
 
     #GET VIDEO METADATA
     def getVideoData(self, file, minSize=None):
+        print(minSize)
         print(f"\n\nNow analyzing the following file: {file}")
         info = self.standardInfoDict
         info["MB"] = [os.path.getsize(file) // 1048576]
         if minSize != None:
-            if info["MB"][0] < minSize:
+            if info["MB"][0] < int(minSize):
                 return "sizeErr"
         info["JAVID"] = [str(file.split("\\")[-1].split(".")[0])]
         info["EXTENSION"] = [file.split(".")[-1]]

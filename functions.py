@@ -122,7 +122,7 @@ def checkMinSize(minSize):
 
 
 async def scanNewCsv(scanPath, fileName, subFolders=False, minSize=None):
-    checkMinSize(minSize=minSize)
+    minSize = checkMinSize(minSize=minSize)
     console.deleteAll()
     if subFolders:
         console.writeInBox(text="Sub-folders scan option found\n")
@@ -134,7 +134,8 @@ async def scanNewCsv(scanPath, fileName, subFolders=False, minSize=None):
         console.writeInBox(text=f"Now analyzing the following file: {file}\n")
         file = os.path.join(scanPath, file)
         fileInfo = fm.getVideoData(file=file, minSize=minSize)
-        cm.appendRow(filePath=fileName, info=fileInfo)
+        if fileInfo != "sizeErr":
+            cm.appendRow(filePath=fileName, info=fileInfo)
         await asyncio.sleep(0.001)
     console.writeInBox(text=f"Created new csv file successfully")
     await multiPart(filePath=fileName)
@@ -151,7 +152,7 @@ async def deleteRow(filePath, id):
 
 #analyzes files video file in a path if their last modification date has been modified from the one stored inside the csv file
 async def update(filePath, scanPath, subFolders, minSize=""):
-    checkMinSize(minSize=minSize)
+    minSize = checkMinSize(minSize=minSize)
     console.deleteAll()
     if subFolders:
         console.writeInBox(text="Sub-folders scan option found\n")
@@ -171,7 +172,8 @@ async def update(filePath, scanPath, subFolders, minSize=""):
                 if lastModificationDate != item[1]:
                     console.writeInBox(text="Last modification date is different, it will be analyzed\n")
                     fileInfo = fm.getVideoData(file=file, minSize=minSize)
-                    cm.appendRow(filePath=filePath, info=fileInfo)
+                    if fileInfo != "sizeErr":
+                        cm.appendRow(filePath=filePath, info=fileInfo)
                 else:
                     print(f"Last modification date is the same, it will be skipped\n")
                 break
@@ -236,8 +238,9 @@ def getSecondsFromTimeStamp(timeStamp, splitValue=":"):
     return s
 
 def setSort(sortColumn):
-    cm.sortColumn = sortColumn
-    print(f"Changed sort column to {cm.sortColumn}")
+    if cm.sortColumn != sortColumn:
+        cm.sortColumn = sortColumn
+        print(f"Changed sort column to {cm.sortColumn}")
 
 async def multiPart(filePath):
     df = cm.loadCsvFile(filePath=filePath)
