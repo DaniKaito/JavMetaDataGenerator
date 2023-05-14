@@ -125,6 +125,7 @@ async def sort(filePath):
         filePath += ".csv"
     dataFrame = cm.loadCsvFile(filePath=filePath)
     cm.saveCsv(filePath=filePath, dataFrame=dataFrame)
+    console.writeInBox(text=f"Sorting completed.")
 
 async def scanNewCsv(scanPath, fileName, subFolders=False, minSize=None):
     minSize = checkMinSize(minSize=minSize)
