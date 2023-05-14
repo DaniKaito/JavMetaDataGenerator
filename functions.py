@@ -237,7 +237,7 @@ def getSecondsFromTimeStamp(timeStamp, splitValue=":"):
     s += 60 * m + 3600 * h
     return s
 
-def setSort(sortColumn):
+async def setSort(sortColumn):
     if cm.sortColumn != sortColumn:
         cm.sortColumn = sortColumn
         print(f"Changed sort column to {cm.sortColumn}")

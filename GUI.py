@@ -263,11 +263,11 @@ class gui():
                                            value=options[key], variable=sortVar,
                                            bg="#282828", fg="#ffffff", activebackground="#282828",
                                            activeforeground="#ffffff", selectcolor="#282828",
-                                           command= lambda: functions.setSort(sortColumn=sortVar.get())
+                                           command= lambda: self.runAsync(functions.setSort(sortColumn=sortVar.get()))
                                            )
             radioBtn.pack(padx=5, pady=5, anchor=tkinter.W)
             radioList.append(radioBtn)
-        functions.setSort(sortColumn="JAVID")
+        self.runAsync(functions.setSort(sortColumn="JAVID"))
         radioList[0].select()
 
 
