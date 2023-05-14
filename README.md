@@ -13,17 +13,15 @@ If you don't want to install the script with all the python dependancies, you ca
 ## Installation for the script
 1. Install the latest python version from: 
 https://www.python.org/downloads/ (tick add to PATH option)
-2. Install the python depencies, by running this command on CMD:
-	cd \path\to\repo
-	pip install -r requirements.txt
-3. Download latest CLI version of MediaInfo from here: 
+2. Install the python depencies, by running this command on CMD: 
+    pip install -r requirements.txt
+4. Download latest CLI version of MediaInfo from here: 
 https://mediaarea.net/it/MediaInfo/Download/Windows
 4. Exctract the folder to C:\mediainfo (create the folder)
 5. Add MediaInfo to Windows PATH Enviroment Variables, if you don't know how to do it follow this guide: 
 https://www.educative.io/answers/how-to-add-an-application-path-to-system-environment-variables
-6. Run the script using:
-	cd \path\to\repo
-	python GUI.py
+6. Run the script using: 
+    python GUI.py
 
 ## Functions:
 - `CREATE CSV FILE`: you need to insert first the file name/path of the new CSV file, insert the PATH where the video files are located, enable the Search in subfolders if you have multiple folders to scan in the path, if you have some small files that you want to skip (for example trailers) insert the minimum file size that will be scanned.
