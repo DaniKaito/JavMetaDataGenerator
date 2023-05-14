@@ -184,7 +184,7 @@ async def update(filePath, scanPath, subFolders, minSize=""):
                 break
         if not found:
             console.writeInBox(text=f"No row found for the following file in the csv: {file} - It will be now analyzed\n")
-            fileInfo = fm.getVideoData(file=file)
+            fileInfo = fm.getVideoData(file=file, minSize=minSize)
             cm.appendRow(filePath=filePath, info=fileInfo)
         print("\n\n")
         await asyncio.sleep(0.001)
