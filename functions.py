@@ -120,6 +120,11 @@ def checkMinSize(minSize):
     else:
         return int(minSize)
 
+async def sort(filePath):
+    if ".csv" not in filePath:
+        filePath += ".csv"
+    dataFrame = cm.loadCsvFile(filePath=filePath)
+    cm.saveCsv(filePath=filePath, dataFrame=dataFrame)
 
 async def scanNewCsv(scanPath, fileName, subFolders=False, minSize=None):
     minSize = checkMinSize(minSize=minSize)

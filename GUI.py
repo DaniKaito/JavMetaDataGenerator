@@ -270,6 +270,12 @@ class gui():
         self.runAsync(functions.setSort(sortColumn="JAVID"))
         radioList[0].select()
 
+        sortSelector = pathSelector(parentWindow=sort.frame, needFrame=False, filters=[("Comma separated values", ".csv")],
+                                    askFile=True, entryLabelText="INSERT CSV FILE PATH", nameSelector=False,
+                                    scanPath=True)
+        sortBtn = button(parentWindow=sort.frame, text="SORT",
+                         command=lambda: self.runAsync(functionTarget=functions.sort(filePath=sortSelector.entryVar.get())))
+
 
     def setupMainWindow(self):
         self.mainWindow.configure(background="#1e1e1e")
