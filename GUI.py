@@ -25,7 +25,10 @@ class checkBox():
 class frame():
     def __init__(self, parentWindow, padx, pady, bg, row, column):
         self.frame = tkinter.Frame(parentWindow, bg=bg, borderwidth=3)
-        self.frame.grid(row=row, column=column, padx=padx, pady=pady)
+        try:
+            self.frame.grid(row=row, column=column, padx=padx, pady=pady)
+        except:
+            self.frame.pack(padx=padx, pady=pady)
 
 class label():
     def __init__(self, parentWindow, labelText, padx, pady, bg, fg, fontSize):
@@ -44,7 +47,7 @@ class minSizeInput():
         self.label = label(parentWindow=parentWindow, labelText="INSERT MIN FILE SIZE (IN MB), LEAVE BLANK IF NONE",
                            padx=5, pady=5, bg="#282828", fg="#c7c7c7", fontSize=8)
         self.entryVar = tkinter.StringVar(parentWindow)
-        self.entry = entry(parentWindow=parentWindow, padx=5, pady=0, entryVar=self.entryVar)
+        self.entry = entry(parentWindow=parentWindow, padx=5, pady=5, entryVar=self.entryVar)
 
 
 class button():
@@ -256,8 +259,16 @@ class gui():
         instructionlabel = label(parentWindow=sort.frame, labelText="CHOOSE ONE OF THE FOLLOWING",
                           padx=5, pady=5, bg="#282828", fg="#c7c7c7", fontSize=11)
         options = {"JavID":"JAVID", "Size Mb":"MB", "Duration":"RUNTIME", "Average Bit Rate":"AVERAGE_BIT_RATE", "Video Bit Rate":"VIDEO_BIT_RATE"}
+        packSides = {"JavID":"left", "Size Mb":"left", "Duration":"left", "Average Bit Rate":"left", "Video Bit Rate":"left"}
         sortVar = tkinter.StringVar(sort.frame)
         radioList = []
+        sortBtn = button(parentWindow=sort.frame, text="SORT",
+                         command=lambda: self.runAsync(functionTarget=functions.sort(filePath=sortSelector.entryVar.get())))
+        sortBtn.button.pack(side="bottom")
+        sortSelector = pathSelector(parentWindow=sort.frame, needFrame=True, filters=[("Comma separated values", ".csv")],
+                                    askFile=True, entryLabelText="INSERT CSV FILE PATH", nameSelector=False,
+                                    scanPath=True)
+        sortSelector.frame.pack(side="bottom") 
         for key in list(options.keys()):
             radioBtn = tkinter.Radiobutton(master=sort.frame, text=key,
                                            value=options[key], variable=sortVar,
@@ -265,16 +276,12 @@ class gui():
                                            activeforeground="#ffffff", selectcolor="#282828",
                                            command= lambda: self.runAsync(functions.setSort(sortColumn=sortVar.get()))
                                            )
-            radioBtn.pack(padx=5, pady=5, anchor=tkinter.W)
+            radioBtn.pack(padx=5, pady=5, anchor=tkinter.W, side=packSides[key])
             radioList.append(radioBtn)
         self.runAsync(functions.setSort(sortColumn="JAVID"))
         radioList[0].select()
 
-        sortSelector = pathSelector(parentWindow=sort.frame, needFrame=False, filters=[("Comma separated values", ".csv")],
-                                    askFile=True, entryLabelText="INSERT CSV FILE PATH", nameSelector=False,
-                                    scanPath=True)
-        sortBtn = button(parentWindow=sort.frame, text="SORT",
-                         command=lambda: self.runAsync(functionTarget=functions.sort(filePath=sortSelector.entryVar.get())))
+        
 
 
     def setupMainWindow(self):
