@@ -195,9 +195,13 @@ class FileManager():
         info["RESOLUTION"] = ["x".join([self.runMediaInfo(stream="Video", outputParameter="%Width%", filePath=file),
                                         self.runMediaInfo(stream="Video", outputParameter="%Height%", filePath=file)])]
         info["GB"] = [round(info["MB"][0] / 1024, 2)]
-        info["DURATION"] = [float(self.runMediaInfo(stream="Video", outputParameter="%Duration%", filePath=file)) // 1000]
-        info["RUNTIME"] = [info["DURATION"][0] // 60]
-        info["DURATION"] = [time.strftime("%H:%M:%S", time.gmtime(info["DURATION"][0]))]
+        try:
+          info["DURATION"] = [float(self.runMediaInfo(stream="Video", outputParameter="%Duration%", filePath=file)) // 1000]
+          info["RUNTIME"] = [info["DURATION"][0] // 60]
+          info["DURATION"] = [time.strftime("%H:%M:%S", time.gmtime(info["DURATION"][0]))]
+        except:
+          info["DURATION"] = ["N/A"]
+          info["RUNTIME"] = ["N/A"]
         info["ADDED"] = [datetime.now().strftime("%d-%m-%Y %H:%M:%S")]
         info["LAST_MODIFIED"] = [datetime.fromtimestamp(os.path.getmtime(file)).strftime("%d-%m-%Y %H:%M:%S")]
         info["FULL_PATH"] = [file]
