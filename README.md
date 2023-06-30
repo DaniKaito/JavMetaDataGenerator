@@ -8,14 +8,14 @@ JavMetaDataGenerator allows to create a csv file with metadata from video files,
 You can also update/trim the csv files without having to re-scan all the videos, all the features support multiparts videos, the name must end with _X or -ptX (X = part number)
 
 ## Download
-If you don't want to install the script with all the python dependancies, you can go to the releases and download the latest compiled version, but you will need to follow step 5 (MediaInfo download + add to enviroment windows path).
+If you don't want to install the script with all the python dependancies, you can go to the releases and download the latest compiled version, but you will need to follow step 3 to 5 (MediaInfo download + add to enviroment windows path).
 
 ## Installation for the script
 1. Install the latest python version from: 
 https://www.python.org/downloads/ (tick add to PATH option)
 2. Install the python depencies, by running this command on CMD: 
     pip install -r requirements.txt
-4. Download latest CLI version of MediaInfo from here: 
+3. Download latest CLI version of MediaInfo from here: 
 https://mediaarea.net/it/MediaInfo/Download/Windows
 4. Exctract the folder to C:\mediainfo (create the folder)
 5. Add MediaInfo to Windows PATH Enviroment Variables, if you don't know how to do it follow this guide: 
