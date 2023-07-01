@@ -2,6 +2,8 @@
 
 Easy to use GUI to generate metadata for Japanese Adult Videos in a csv format, that allows cross-check, compare with other csv, merge between csv, export to html, and more features!
 
+![alt text]([https://github.com/DaniKaito/JavItManager/blob/main/preview.png](https://github.com/DaniKaito/JavMetaDataGenerator/blob/main/preview.png)?raw=true)
+
 ## Description
 
 JavMetaDataGenerator allows to create a csv file with metadata from video files, allowing a better search of all the JAV by ID, so you won't need to use windows search to quickly search files, and also you can use that csv file to cross-check on various websites (DMM,MaxJAV,JavTrailers) to search for videos if you need to upgrade the quality of them, or get missing ones from actress/studios/tags after you generate a csv for them using the JavLibrary feature.
