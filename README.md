@@ -2,7 +2,7 @@
 
 Easy to use GUI to generate metadata for Japanese Adult Videos in a csv format, that allows cross-check, compare with other csv, merge between csv, export to html, and more features!
 
-![alt text]([https://github.com/DaniKaito/JavItManager/blob/main/preview.png](https://github.com/DaniKaito/JavMetaDataGenerator/blob/main/preview.png)?raw=true)
+![Preview](https://github.com/DaniKaito/JavMetaDataGenerator/blob/main/preview.png?raw=true)
 
 ## Description
 
