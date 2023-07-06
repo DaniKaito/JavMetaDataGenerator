@@ -3,7 +3,6 @@ import csv
 import enum
 from time import sleep, time_ns
 import undetected_chromedriver as uc
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,21 +16,21 @@ driver = None
 
 class TableKeys(enum.Enum):
         JAVID:str='JAVID'
-        EXTENSION:str='Extension'
-        FRAME_RATE:str='Frame_Rate'
-        AVERAGE_BIT_RATE:str='Average_Frame_Rate'
-        VIDEO_BIT_RATE:str='Video_Bit_Rate'
-        AUDIO_BIT_RATE:str='Audio_Bit_Rate'
-        CODEC:str='Codec'
-        RESOLUTION:str='Resolution'
+        EXTENSION:str='EXTENSION'
+        FRAME_RATE:str='FRAME_RATE'
+        AVERAGE_BIT_RATE:str='AVERAGE_BIT_RATE'
+        VIDEO_BIT_RATE:str='VIDEO_BIT_RATE'
+        AUDIO_BIT_RATE:str='AUDIO_BIT_RATE'
+        CODEC:str='CODEC'
+        RESOLUTION:str='RESOLUTION'
         MB:str='MB'
         GB:str='GB'
-        RUNTIME:str='Runtime'
-        DURATION:str='Duration'
-        ADDED:str='Added'
-        LAST_MODIFIED:str='Last_Modified'
-        DAMAGED:str='Damaged'
-        FULL_PATH:str='Full_Path'
+        RUNTIME:str='RUNTIME'
+        DURATION:str='DURATION'
+        ADDED:str='ADDED'
+        LAST_MODIFIED:str='LAST_MODIFIED'
+        DAMAGED:str='DAMAGED'
+        FULL_PATH:str='FULL_PATH'
 
 async def checkID(javid:str):
     dmmSearchURL="https://www.dmm.co.jp/monthly/premium/-/list/search/=/?searchstr="
@@ -145,7 +144,7 @@ def readCsv(fileName):
 
 async def main(fileName):
     global driver
-    driver = uc.Chrome(use_subprocess=True,headless=True)
+    driver = uc.Chrome()
     rowList=readCsv(f"{fileName}")
     rowList.pop(0)
     for row in rowList:
