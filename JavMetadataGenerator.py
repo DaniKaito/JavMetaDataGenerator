@@ -173,7 +173,6 @@ class FileManager():
 
     #GET VIDEO METADATA
     def getVideoData(self, file, minSize=None):
-        print(minSize)
         print(f"\n\nNow analyzing the following file: {file}")
         info = self.standardInfoDict
         info["MB"] = [os.path.getsize(file) // 1048576]
@@ -197,7 +196,7 @@ class FileManager():
         info["GB"] = [round(info["MB"][0] / 1024, 2)]
         try:
           info["DURATION"] = [float(self.runMediaInfo(stream="Video", outputParameter="%Duration%", filePath=file)) // 1000]
-          info["RUNTIME"] = [info["DURATION"][0] // 60]
+          info["RUNTIME"] = [str(info["DURATION"][0] // 60).split('.')[0]]
           info["DURATION"] = [time.strftime("%H:%M:%S", time.gmtime(info["DURATION"][0]))]
         except:
           info["DURATION"] = ["N/A"]
