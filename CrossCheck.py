@@ -3,6 +3,7 @@ import csv
 import enum
 from time import sleep, time_ns
 import undetected_chromedriver as uc
+from selenium.webdriver import ChromeOptions
 import logging
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -154,7 +155,12 @@ def readCsv(fileName):
 
 async def main(fileName):
     global driver
-    driver = uc.Chrome(use_subprocess=True,headless=True)
+    options = ChromeOptions() 
+    options.add_argument("--auto-open-devtools-for-tabs")
+    options.add_argument("--headless")
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    driver = uc.Chrome(options=options)
+    print("Driver setted")
     rowList=readCsv(f"{fileName}")
     rowList.pop(0)
     for row in rowList:
