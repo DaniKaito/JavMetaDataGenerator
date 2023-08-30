@@ -3,9 +3,12 @@ import csv
 import enum
 from time import sleep, time_ns
 import undetected_chromedriver as uc
+<<<<<<< HEAD
 from selenium.webdriver import ChromeOptions
 import logging
 from selenium.webdriver.common.keys import Keys
+=======
+>>>>>>> 5b8d5ae5d73a0d7b362fed462545fdf13d015cac
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,29 +20,23 @@ from random import randint
 
 driver = None
 
-LOGGER:logging.Logger=logging.getLogger(__name__)
-file_handler = logging.FileHandler('logfile.log')
-formatter    = logging.Formatter('%(asctime)s: %(message)s')
-file_handler.setFormatter(formatter)
-LOGGER.addHandler(file_handler)
-
 class TableKeys(enum.Enum):
         JAVID:str='JAVID'
-        EXTENSION:str='Extension'
-        FRAME_RATE:str='Frame_Rate'
-        AVERAGE_BIT_RATE:str='Average_Frame_Rate'
-        VIDEO_BIT_RATE:str='Video_Bit_Rate'
-        AUDIO_BIT_RATE:str='Audio_Bit_Rate'
-        CODEC:str='Codec'
-        RESOLUTION:str='Resolution'
+        EXTENSION:str='EXTENSION'
+        FRAME_RATE:str='FRAME_RATE'
+        AVERAGE_BIT_RATE:str='AVERAGE_BIT_RATE'
+        VIDEO_BIT_RATE:str='VIDEO_BIT_RATE'
+        AUDIO_BIT_RATE:str='AUDIO_BIT_RATE'
+        CODEC:str='CODEC'
+        RESOLUTION:str='RESOLUTION'
         MB:str='MB'
         GB:str='GB'
-        RUNTIME:str='Runtime'
-        DURATION:str='Duration'
-        ADDED:str='Added'
-        LAST_MODIFIED:str='Last_Modified'
-        DAMAGED:str='Damaged'
-        FULL_PATH:str='Full_Path'
+        RUNTIME:str='RUNTIME'
+        DURATION:str='DURATION'
+        ADDED:str='ADDED'
+        LAST_MODIFIED:str='LAST_MODIFIED'
+        DAMAGED:str='DAMAGED'
+        FULL_PATH:str='FULL_PATH'
 
 async def checkID(javid:str):
     dmmSearchURL="https://www.dmm.co.jp/monthly/premium/-/list/search/=/?searchstr="
@@ -97,9 +94,9 @@ async def checkID(javid:str):
             link=posts[0].find_element(By.CSS_SELECTOR,"h2.title > a").get_attribute("href")
             return ris+link+"\n"
     except TimeoutException:
-        LOGGER.error(f"Page took too much to load, timer was {delay} seconds javid:{javid}")
+        print(f"Page took too much to load, timer was {delay} seconds javid:{javid}")
     except Exception as e:
-        LOGGER.error(e)
+        print(e)
     '''
     Search on JavTrailers
     '''
@@ -126,16 +123,14 @@ async def checkID(javid:str):
                                         element=soup2.select("div#info-row > div:nth-child(2) > p:nth-child(2)")
                                         return ris+link+"\n" 
                                     except TimeoutError:
-                                        LOGGER.error(f"JavTrailer took too long for JAVID: {javid}")
                                         print(f"JavTrailer took too long.")                                    
                                 else:
-                                    LOGGER.error(f"Request to {link} failed, response {response2}")
+                                    print(f"Request to {link} failed, response {response2}")
                 except TimeoutError:
-                    LOGGER.error(f"JavTrailer took too long for JAVID: {javid}")
                     print(f"JavTrailer took too long.")
 
             else:
-                LOGGER.error(f"Request to {javTrailerSearchURL+javid} failed, response {response}")
+                print(f"Request to {javTrailerSearchURL+javid} failed, response {response}")
     return ris+"No results"+"\n"
 
 def readCsv(fileName):
@@ -155,12 +150,16 @@ def readCsv(fileName):
 
 async def main(fileName):
     global driver
+<<<<<<< HEAD
     options = ChromeOptions() 
     options.add_argument("--auto-open-devtools-for-tabs")
     options.add_argument("--headless")
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     driver = uc.Chrome(options=options)
     print("Driver setted")
+=======
+    driver = uc.Chrome()
+>>>>>>> 5b8d5ae5d73a0d7b362fed462545fdf13d015cac
     rowList=readCsv(f"{fileName}")
     rowList.pop(0)
     for row in rowList:
